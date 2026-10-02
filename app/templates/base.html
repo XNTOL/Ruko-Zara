@@ -4,13 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="{{ t.tagline }}">
+  <meta name="theme-color" content="#1f4e79">
+  <meta name="application-name" content="Ruko Zara">
   <title>{% block title %}{{ page_title | default(t.app_title) }}{% endblock %}</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/static/favicon.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="/static/site.webmanifest">
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
   <a class="skip-link" href="#main">{% if lang == "en" %}Skip to content{% else %}मुख्य भाग पर जाएँ{% endif %}</a>
   <header class="site-header">
-    <a class="brand" href="/?lang={{ lang }}" data-i18n-brand>{{ t.app_title }}</a>
+    <a class="brand" href="/?lang={{ lang }}">
+      <img class="brand__mark" src="/static/favicon.svg" width="28" height="28" alt="" aria-hidden="true">
+      <span data-i18n-brand>{{ t.app_title }}</span>
+    </a>
     <nav class="lang-switch" aria-label="language">
       {% if page_kind == "result" %}
       <button type="button" class="lang-opt" data-set-lang="hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</button>

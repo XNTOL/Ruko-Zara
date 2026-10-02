@@ -175,7 +175,7 @@
       again.textContent = t.btn_again;
       again.setAttribute("href", "/?lang=" + lang);
     }
-    var brand = q("[data-i18n-brand]");
+    var brand = q("a.brand");
     if (brand) brand.setAttribute("href", "/?lang=" + lang);
     document.querySelectorAll(".lang-opt").forEach(function (el) {
       if (el.getAttribute("data-set-lang") === lang)

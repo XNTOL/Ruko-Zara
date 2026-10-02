@@ -69,6 +69,11 @@ def test_home_hindi_default_and_landmarks():
     assert 'id="main"' in html
     assert 'href="#main"' in html
     assert 'href="/static/app.css"' in html
+    assert 'href="/static/favicon.svg"' in html
+    assert 'rel="manifest"' in html
+    assert client.get("/static/favicon.svg").status_code == 200
+    assert client.get("/static/apple-touch-icon.png").status_code == 200
+    assert client.get("/static/site.webmanifest").status_code == 200
 
 
 def test_result_accessible_structure():

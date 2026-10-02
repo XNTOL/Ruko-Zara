@@ -133,16 +133,14 @@ textarea:focus-visible {
   min-height: var(--tap);
   display: inline-flex;
   align-items: center;
+  gap: 10px;
 }
 
-.brand::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  margin-right: 10px;
-  border-radius: 50%;
-  background: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-soft);
+.brand__mark {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 7px;
 }
 
 .lang-switch {
