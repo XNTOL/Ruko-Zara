@@ -80,16 +80,22 @@ textarea:focus-visible {
   flex-shrink: 0;
 }
 
-.lang-switch a {
+.lang-switch a,
+.lang-switch .lang-opt {
   color: var(--muted);
   text-decoration: none;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
 }
 
-.lang-switch a[aria-current="true"] {
+.lang-switch a[aria-current="true"],
+.lang-switch .lang-opt[aria-current="true"] {
   color: var(--text);
   font-weight: 700;
   text-decoration: underline;

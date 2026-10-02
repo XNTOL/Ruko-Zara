@@ -86,6 +86,44 @@ def _sebi(result: Result, lang: str) -> dict[str, object]:
     }
 
 
+def _locale_pack(result: Result, summary: str | None, lang: str) -> dict[str, object]:
+    """One language's strings for the result page (no original message)."""
+    lang = _code(lang)
+    strings = _strings(lang)
+    reasons = _reasons(result, lang)
+    level_title = LEVELS[result.level][lang]
+    pause = _pause(lang)
+    sebi = _sebi(result, lang)
+    return {
+        "level_title": level_title,
+        "reasons": [
+            {"rule": r["rule"], "title": r["title"], "why": r["why"]} for r in reasons
+        ],
+        "section_none": strings["section_none"],
+        "caveat": CAVEAT[lang],
+        "summary": summary,
+        "sebi": sebi,
+        "pause": pause,
+        "card_text": _card_text(result, lang),
+        "speak_text": _speak_text(level_title, reasons, lang),
+        "t": {
+            "app_title": strings["app_title"],
+            "section_reasons": strings["section_reasons"],
+            "matched": strings["matched"],
+            "ai_label": strings["ai_label"],
+            "btn_listen": strings["btn_listen"],
+            "btn_stop": strings["btn_stop"],
+            "voice_none": strings["voice_none"],
+            "btn_again": strings["btn_again"],
+            "about_link": strings["about_link"],
+            "footer": strings["footer"],
+            "lang_hi": strings["lang_hi"],
+            "lang_en": strings["lang_en"],
+            "btn_sebi": strings["btn_sebi"],
+        },
+    }
+
+
 def build_view(
     result: Result,
     summary: str | None,
@@ -93,24 +131,28 @@ def build_view(
 ) -> dict[str, object]:
     """Return the dict passed to result.html (ARCHITECTURE §3)."""
     lang = _code(lang)
+    pack = _locale_pack(result, summary, lang)
     strings = _strings(lang)
-    reasons = _reasons(result, lang)
-    level_title = LEVELS[result.level][lang]
 
     return {
         "lang": lang,
         "level": result.level,
-        "level_title": level_title,
-        "reasons": reasons,
-        "caveat": CAVEAT[lang],
+        "level_title": pack["level_title"],
+        "reasons": _reasons(result, lang),
+        "caveat": pack["caveat"],
         "summary": summary,
-        "sebi": _sebi(result, lang),
-        "pause": _pause(lang),
-        "card_text": _card_text(result, lang),
-        "speak_text": _speak_text(level_title, reasons, lang),
+        "sebi": pack["sebi"],
+        "pause": pack["pause"],
+        "card_text": pack["card_text"],
+        "speak_text": pack["speak_text"],
         "t": strings,
         "other_lang": "en" if lang == "hi" else "hi",
         "page_kind": "result",
+        # Summary only in the language it was written for (AI is one lang).
+        "i18n": {
+            "hi": _locale_pack(result, summary if lang == "hi" else None, "hi"),
+            "en": _locale_pack(result, summary if lang == "en" else None, "en"),
+        },
     }
 
 

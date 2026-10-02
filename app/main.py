@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import logging
 import os
+import time
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request
@@ -13,6 +15,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.content import STRINGS
+from app.explain import explain
+from app.privacy import mask_sensitive
 from app.rules import assess
 from app.view import build_about, build_index, build_view
 
@@ -20,6 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 app = FastAPI(title="Ruko Zara")
+logger = logging.getLogger("ruko_zara")
+if not logging.getLogger().handlers:
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 MAX_CHARS = int(os.getenv("MAX_CHARS", "2000"))
 MIN_CHARS = 5
@@ -153,8 +160,20 @@ async def check(
         )
 
     result = assess(trimmed)
-    # AI summary comes in T7; tracer keeps summary None so the app works AI-off.
-    vm = build_view(result, summary=None, lang=lang)
+    masked = mask_sensitive(trimmed)
+    started = time.perf_counter()
+    client_ip = request.client.host if request.client else ""
+    summary = explain(masked, result, lang, client_ip=client_ip)
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    # One log line: no message text (G3).
+    logger.info(
+        "level=%s rules=%s ai_used=%s latency_ms=%s",
+        result.level,
+        ",".join(f.rule for f in result.findings) or "-",
+        bool(summary),
+        latency_ms,
+    )
+    vm = build_view(result, summary=summary, lang=lang)
     vm["example"] = ""
     return templates.TemplateResponse(request, "result.html", vm, status_code=200)
 

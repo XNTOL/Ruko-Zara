@@ -3,6 +3,8 @@
 {% block title %}{{ level_title }}{% endblock %}
 
 {% block content %}
+  <script type="application/json" id="result-i18n">{{ i18n | tojson }}</script>
+
   {# 1. Level card — icon + text + colour together #}
   <section class="level level--{{ level }}" data-level="{{ level }}">
     <span class="level__icon" aria-hidden="true">
@@ -14,7 +16,7 @@
       <svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="16" r="14" fill="currentColor"/><text x="16" y="22" text-anchor="middle" fill="#FAF7F2" font-size="16" font-weight="700" font-family="system-ui,sans-serif">i</text></svg>
       {% endif %}
     </span>
-    <h1 class="level__title">{{ level_title }}</h1>
+    <h1 class="level__title" data-i18n="level_title">{{ level_title }}</h1>
   </section>
 
   {# 2. Listen — JS adds speech; fallback text if no voice (T5) #}
@@ -32,14 +34,14 @@
   </div>
 
   {# 3. Reasons (FR-3) #}
-  <section class="block">
-    <h2 class="block__title">{{ t.section_reasons }}</h2>
+  <section class="block" id="reasons-block">
+    <h2 class="block__title" data-i18n="section_reasons">{{ t.section_reasons }}</h2>
     {% if reasons %}
       {% for reason in reasons %}
       <article class="reason" data-rule="{{ reason.rule }}">
-        <h3>{{ reason.title }}</h3>
-        <p>{{ reason.why }}</p>
-        <p>{{ t.matched }}
+        <h3 data-i18n-reason-title>{{ reason.title }}</h3>
+        <p data-i18n-reason-why>{{ reason.why }}</p>
+        <p><span data-i18n="matched">{{ t.matched }}</span>
           {% for item in reason.evidence %}
           <mark>{{ item }}</mark>{% if not loop.last %}, {% endif %}
           {% endfor %}
@@ -47,15 +49,15 @@
       </article>
       {% endfor %}
     {% else %}
-      <p class="panel">{{ t.section_none }}</p>
+      <p class="panel" data-i18n="section_none">{{ t.section_none }}</p>
     {% endif %}
   </section>
 
   {# 4. AI summary — only when present (T7) #}
   {% if summary %}
   <section class="block panel" data-ai="1">
-    <p class="hint">{{ t.ai_label }}</p>
-    <p>{{ summary }}</p>
+    <p class="hint" data-i18n="ai_label">{{ t.ai_label }}</p>
+    <p data-i18n-summary>{{ summary }}</p>
   </section>
   {% endif %}
 
@@ -63,36 +65,36 @@
   {% if sebi.show %}
   <section class="block panel" data-sebi="1">
     {% for entry in sebi.numbers %}
-    <p>{{ entry.text }}</p>
+    <p data-i18n-sebi-text data-sebi-number="{{ entry.number }}">{{ entry.text }}</p>
     <p class="actions">
-      <a class="btn btn--secondary" href="{{ entry.check_at }}" rel="noopener noreferrer">{{ entry.btn }}</a>
+      <a class="btn btn--secondary" href="{{ entry.check_at }}" rel="noopener noreferrer" data-i18n-sebi-btn>{{ entry.btn }}</a>
     </p>
     {% endfor %}
     {% if sebi.claim_without_number %}
-    <p>{{ sebi.claim_text }}</p>
+    <p data-i18n-sebi-claim>{{ sebi.claim_text }}</p>
     {% endif %}
   </section>
   {% endif %}
 
-  {# 6–7. Pause + report #}
+  {# 6–7. Pause + report (every level — T6) #}
   <section class="block pause" data-pause="1">
-    <h2 class="block__title">{{ pause.title }}</h2>
+    <h2 class="block__title" data-i18n-pause-title>{{ pause.title }}</h2>
     <ol>
       {% for step in pause.steps %}
-      <li>{{ step }}</li>
+      <li data-i18n-pause-step="{{ loop.index0 }}">{{ step }}</li>
       {% endfor %}
     </ol>
   </section>
 
   <section class="block" data-report="1">
-    <h2 class="block__title">{{ pause.report_title }}</h2>
+    <h2 class="block__title" data-i18n-report-title>{{ pause.report_title }}</h2>
     <ul class="report">
       {% for item in pause.report %}
-      <li>
+      <li data-report-key="{{ item.key }}">
         {% if item.href %}
-        <a href="{{ item.href }}" rel="noopener noreferrer">{{ item.text }}</a>
+        <a href="{{ item.href }}" rel="noopener noreferrer" data-i18n-report-text>{{ item.text }}</a>
         {% else %}
-        <span class="panel">{{ item.text }}</span>
+        <span class="panel" data-i18n-report-text>{{ item.text }}</span>
         {% endif %}
       </li>
       {% endfor %}
@@ -100,10 +102,10 @@
   </section>
 
   {# 9. Caveat #}
-  <p class="caveat" data-caveat="1">{{ caveat }}</p>
+  <p class="caveat" data-caveat="1" data-i18n="caveat">{{ caveat }}</p>
 
   {# 10. Check another #}
   <p class="actions">
-    <a class="btn btn--ghost" href="/?lang={{ lang }}">{{ t.btn_again }}</a>
+    <a class="btn btn--ghost" href="/?lang={{ lang }}" data-i18n-again>{{ t.btn_again }}</a>
   </p>
 {% endblock %}

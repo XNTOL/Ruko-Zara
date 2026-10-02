@@ -17,6 +17,9 @@ def test_build_view_reasons_and_caveat():
     assert vm["caveat"]
     assert vm["summary"] is None
     assert "sure profit" in vm["speak_text"].lower() or "Promise" in vm["speak_text"]
+    assert "hi" in vm["i18n"] and "en" in vm["i18n"]
+    assert vm["i18n"]["hi"]["level_title"]
+    assert vm["i18n"]["en"]["level_title"]
 
 
 def test_build_view_sebi_number():

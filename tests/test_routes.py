@@ -169,6 +169,7 @@ def test_js_listen_wired_and_under_budget():
     assert js.status_code == 200
     assert b"speechSynthesis" in js.content
     assert b"voice-none" in js.content
+    assert b"applyResultLang" in js.content or b"data-set-lang" in js.content
 
     result = client.post("/check", data={"message": SCAM, "lang": "hi"})
     html = result.text
@@ -178,4 +179,34 @@ def test_js_listen_wired_and_under_budget():
     assert "data-label-stop=" in html
     assert 'id="voice-none"' in html
     assert "सुनें" in html
-    assert "रोकें" in html or "data-label-stop" in html
+    assert 'id="result-i18n"' in html
+    assert 'data-set-lang="hi"' in html
+    assert 'data-set-lang="en"' in html
+    # In-place switch: no home redirect links for language on result
+    assert 'href="/?lang=hi"' not in html.split("lang-switch")[1].split("</nav>")[0]
+    assert "Many warning signs found" in html  # en pack embedded
+    assert LEVELS["many"]["hi"] in html
+
+
+def test_pause_and_report_on_all_levels():
+    """T6: pause step + reporting list at every level."""
+    cases = [
+        (SCAM, "many"),
+        (
+            "SEBI approved operator tip. Join our private WhatsApp group.",
+            "some",
+        ),
+        ("Seats are limited. Reply only today if you want details.", "few"),
+    ]
+    for message, level in cases:
+        response = client.post("/check", data={"message": message, "lang": "en"})
+        assert response.status_code == 200, level
+        html = response.text
+        assert f'data-level="{level}"' in html
+        assert 'data-pause="1"' in html
+        assert 'data-report="1"' in html
+        assert "Do not send money" in html
+        assert "tel:1930" in html
+        assert "cybercrime.gov.in" in html or LINKS["cybercrime"] in html
+        assert "scores.sebi.gov.in" in html or LINKS["scores"] in html
+        assert "bank or UPI" in html

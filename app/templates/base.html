@@ -8,11 +8,11 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/?lang={{ lang }}">{{ t.app_title }}</a>
+    <a class="brand" href="/?lang={{ lang }}" data-i18n-brand>{{ t.app_title }}</a>
     <nav class="lang-switch" aria-label="language">
       {% if page_kind == "result" %}
-      <a href="/?lang=hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
-      <a href="/?lang=en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
+      <button type="button" class="lang-opt" data-set-lang="hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</button>
+      <button type="button" class="lang-opt" data-set-lang="en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</button>
       {% elif page_kind == "about" %}
       <a href="/about?lang=hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
       <a href="/about?lang=en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
@@ -28,9 +28,9 @@
   </main>
 
   <footer class="site-footer">
-    <p>{{ t.footer }}</p>
+    <p data-i18n-footer>{{ t.footer }}</p>
     {% if page_kind != "about" %}
-    <p><a href="/about?lang={{ lang }}">{{ t.about_link }}</a></p>
+    <p><a href="/about?lang={{ lang }}" data-i18n-about-link>{{ t.about_link }}</a></p>
     {% endif %}
   </footer>
   <script src="/static/app.js" defer></script>
