@@ -13,8 +13,8 @@
   <form method="post" action="/check">
     <input type="hidden" name="lang" value="{{ lang }}">
     <label class="field-label" for="message">{{ t.input_label }}</label>
-    <textarea class="field" id="message" name="message" rows="8" maxlength="2000"{% if error %} autofocus{% endif %}>{{ message }}</textarea>
-    <p class="hint">{{ t.privacy_hint }}</p>
+    <textarea class="field" id="message" name="message" rows="8" maxlength="2000" aria-describedby="privacy-hint"{% if error %} autofocus aria-invalid="true" aria-errormessage="form-error"{% endif %}>{{ message }}</textarea>
+    <p class="hint" id="privacy-hint">{{ t.privacy_hint }}</p>
     <div class="actions">
       <button class="btn" type="submit" data-loading="{{ t.loading }}">{{ t.btn_check }}</button>
       <a class="btn btn--secondary" href="/?lang={{ lang }}&amp;example={{ next_example }}">{{ t.btn_example }}</a>
