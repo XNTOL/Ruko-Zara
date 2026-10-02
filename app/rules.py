@@ -35,17 +35,25 @@ class Result:
     sebi_claim_without_number: bool = False
 
 
-# Each rule: (rule_id, strength, compiled patterns).
+# Patterns cover English, Hindi (Devanagari), and Hinglish (romanized).
 _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
     (
         "guaranteed_returns",
         "strong",
         [
-            re.compile(r"100\s*%\s*(sure|guaranteed|profit|return)", re.I),
-            re.compile(r"guaranteed\s+(returns?|profit)", re.I),
+            re.compile(r"100\s*%\s*(sure|guaranteed|profit|return|pakka)", re.I),
+            re.compile(r"guaranteed\s+(returns?|profit|munafa)", re.I),
             re.compile(r"sure\s+profit", re.I),
-            re.compile(r"risk[\s-]*free\s+(profit|return)", re.I),
-            re.compile(r"double\s+your\s+money", re.I),
+            re.compile(r"risk[\s-]*free\s+(profit|return|munafa)", re.I),
+            re.compile(r"double\s+(?:your\s+)?(?:money|paisa|profit)", re.I),
+            re.compile(r"\b2x\s*(?:profit|returns?|money|paisa)\b", re.I),
+            re.compile(r"\beasy\s+money\b", re.I),
+            re.compile(r"\bfixed\s+profit\b", re.I),
+            re.compile(r"\bpakka\s*(?:munafa|profit|return|returns?)\b", re.I),
+            re.compile(r"\bpakke?\s*returns?\b", re.I),
+            re.compile(r"\bbina\s*risk\b", re.I),
+            re.compile(r"\bguarantee[d]?\s*(?:wala\s*)?(?:return|profit|munafa)\b", re.I),
+            re.compile(r"\bconfirmed\s+profit\b", re.I),
             re.compile(r"पक्का\s*मुना[फ़फ]ा", re.I),
             re.compile(r"गारंटी(?:ड)?\s*(?:मुना[फ़फ]ा|रिटर्न)", re.I),
             re.compile(r"बिना\s*जोखिम\s*(?:का\s*)?मुना[फ़फ]ा", re.I),
@@ -55,14 +63,19 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
         "money_or_access",
         "strong",
         [
-            re.compile(r"registration\s+fee", re.I),
-            re.compile(r"share\s+your\s+otp", re.I),
+            re.compile(r"registration\s+fees?", re.I),
+            re.compile(r"share\s+(?:your\s+)?otp", re.I),
             re.compile(r"send\s+(?:your\s+)?otp", re.I),
+            re.compile(r"\botp\s*(?:bhejo|batao|bataao|do|dena|share|send)\b", re.I),
+            re.compile(r"\b(?:bhejo|batao|bataao|share)\s+(?:the\s+)?otp\b", re.I),
             re.compile(r"\botp\b", re.I),
             re.compile(r"screen[\s-]*share", re.I),
-            re.compile(r"\banydesk\b", re.I),
-            re.compile(r"\bteamviewer\b", re.I),
+            re.compile(r"\bany[\s-]*desk\b", re.I),
+            re.compile(r"\bteam[\s-]*viewer\b", re.I),
             re.compile(r"pay\s+(?:the\s+)?(?:fees?|charges?)\s+first", re.I),
+            re.compile(r"\bfees?\s*bharo\b", re.I),
+            re.compile(r"\bpehle\s*(?:fees?|paisa|payment)\b", re.I),
+            re.compile(r"\baccount\s*(?:number|details?)\s*(?:bhejo|do|dena)\b", re.I),
             re.compile(r"शुल्क\s*(?:भरो|भेजो|दो)", re.I),
             re.compile(r"otp\s*(?:बता|भेज|दे)", re.I),
             re.compile(r"स्क्रीन\s*शेयर", re.I),
@@ -77,6 +90,13 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"limited\s+(?:seats?|slots?|time)", re.I),
             re.compile(r"hurry\s+up", re.I),
             re.compile(r"act\s+now", re.I),
+            re.compile(r"\baaj\s*hi\b", re.I),
+            re.compile(r"\bsirf\s*aaj\b", re.I),
+            re.compile(r"\bjaldi(?:\s*se)?(?:\s*karo)?\b", re.I),
+            re.compile(r"\babhi\s*(?:join|karo|bhejo|bolo)\b", re.I),
+            re.compile(r"\blast\s*(?:seat|chance|opportunity)\b", re.I),
+            re.compile(r"\bseats?\s*limited\b", re.I),
+            re.compile(r"\bopportunity\s+jaa\s*rha\b", re.I),
             re.compile(r"आज\s*ही", re.I),
             re.compile(r"सिर्फ\s*आज", re.I),
             re.compile(r"जल्दी\s*(?:करो|करें)", re.I),
@@ -90,10 +110,15 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"sebi\s+approved", re.I),
             re.compile(r"sebi\s+registered", re.I),
             re.compile(r"sebi\s+certified", re.I),
+            re.compile(r"\bsebi\s*wala\b", re.I),
+            re.compile(r"\bsebi\s*se\s*approved\b", re.I),
             re.compile(r"\binsider\b", re.I),
             re.compile(r"\boperator\b", re.I),
             re.compile(r"rbi\s+approved", re.I),
             re.compile(r"government\s+approved", re.I),
+            re.compile(r"\bgovt\.?\s*approved\b", re.I),
+            re.compile(r"\bsarkari\s*(?:approved|scheme|yojana)\b", re.I),
+            re.compile(r"\binsider\s*(?:tip|info|news)\b", re.I),
             re.compile(r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड)", re.I),
             re.compile(r"सरकारी\s*मंज़?ूरी", re.I),
             re.compile(r"इन्साइडर", re.I),
@@ -104,10 +129,13 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
         "medium",
         [
             re.compile(r"t\.me/\S+", re.I),
-            re.compile(r"join\s+(?:our\s+)?(?:vip\s+)?(?:telegram|whatsapp)", re.I),
-            re.compile(r"vip\s+(?:telegram|whatsapp|group)", re.I),
-            re.compile(r"private\s+(?:telegram|whatsapp|group|channel)", re.I),
+            re.compile(r"join\s+(?:our\s+|the\s+)?(?:vip\s+)?(?:telegram|whatsapp|wa|group|channel)", re.I),
+            re.compile(r"vip\s+(?:telegram|whatsapp|group|grp)", re.I),
+            re.compile(r"private\s+(?:telegram|whatsapp|group|channel|grp)", re.I),
+            re.compile(r"(?:telegram|whatsapp|wa)\s*group", re.I),
             re.compile(r"download\s+(?:our\s+)?app", re.I),
+            re.compile(r"\bapp\s*download(?:\s*karo)?\b", re.I),
+            re.compile(r"\bdownload\s*karo\b", re.I),
             re.compile(r"टेलीग्राम", re.I),
             re.compile(r"व्हाट्स(?:अ|ऐ)प\s*ग्रुप", re.I),
             re.compile(r"VIP\s*ग्रुप", re.I),
@@ -121,6 +149,9 @@ _NEGATION = re.compile(
     r"(?:"
     r"\bnever\b|\bdon'?t\b|\bdo\s+not\b|\bavoid\b|\bwarn(?:s|ing)?\b|"
     r"\bscam\b|\bfraud\b|\bignore\b|\bnot\s+share\b|"
+    r"\bmat\s+(?:share|bhejo|batao|bataao|do|dena|join|kholo|dena)\b|"
+    r"\bkabhi\s*(?:bhi\s*)?mat\b|"
+    r"\bnahi\s*(?:dena|bhejna|batana|batana)\b|"
     r"कभी\s*न[ाअ]?|मत\s+|न\s+दें|न\s+बता|नहीं\s+देना|"
     r"न\s+खोल|ठगी|सावधान|बचना|बचें"
     r")",
@@ -130,13 +161,13 @@ _NEGATION = re.compile(
 _SEBI_NUMBER = re.compile(r"\b(IN[A-Z]{1,2}[0-9]{6,12})\b", re.I)
 _SEBI_CLAIM = re.compile(
     r"(?:"
-    r"sebi\s+(?:approved|registered|registration|certified)|"
+    r"sebi\s+(?:approved|registered|registration|certified|wala)|"
     r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड|रजिस्ट्रेशन)"
     r")",
     re.I,
 )
 
-_NEGATION_WINDOW = 48
+_NEGATION_WINDOW = 56
 
 
 def _is_warning_context(text: str, start: int, end: int) -> bool:

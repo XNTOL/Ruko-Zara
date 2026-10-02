@@ -1,23 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <p class="tagline">{{ t.tagline }}</p>
+  <section class="hero-card">
+    <p class="tagline">{{ t.tagline }}</p>
 
-  {% if error %}
-  <p class="form-error" id="form-error" role="alert">
-    <span aria-hidden="true">!</span>
-    <span>{{ error }}</span>
-  </p>
-  {% endif %}
+    {% if error %}
+    <p class="form-error" id="form-error" role="alert">
+      <span aria-hidden="true">!</span>
+      <span>{{ error }}</span>
+    </p>
+    {% endif %}
 
-  <form method="post" action="/check">
-    <input type="hidden" name="lang" value="{{ lang }}">
-    <label class="field-label" for="message">{{ t.input_label }}</label>
-    <textarea class="field" id="message" name="message" rows="8" maxlength="2000" aria-describedby="privacy-hint"{% if error %} autofocus aria-invalid="true" aria-errormessage="form-error"{% endif %}>{{ message }}</textarea>
-    <p class="hint" id="privacy-hint">{{ t.privacy_hint }}</p>
-    <div class="actions">
-      <button class="btn" type="submit" data-loading="{{ t.loading }}">{{ t.btn_check }}</button>
-      <a class="btn btn--secondary" href="/?lang={{ lang }}&amp;example={{ next_example }}">{{ t.btn_example }}</a>
-    </div>
-  </form>
+    <form method="post" action="/check">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      <label class="field-label" for="message">{{ t.input_label }}</label>
+      <textarea class="field" id="message" name="message" rows="8" maxlength="2000" autocomplete="off" enterkeyhint="done" aria-describedby="privacy-hint"{% if error %} autofocus aria-invalid="true" aria-errormessage="form-error"{% endif %}>{{ message }}</textarea>
+      <p class="hint" id="privacy-hint">{{ t.privacy_hint }}</p>
+      <div class="actions">
+        <button class="btn" type="submit" data-loading="{{ t.loading }}">{{ t.btn_check }}</button>
+        <a class="btn btn--secondary" href="/?lang={{ lang }}&amp;example={{ next_example }}">{{ t.btn_example }}</a>
+      </div>
+    </form>
+  </section>
 {% endblock %}

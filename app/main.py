@@ -34,14 +34,14 @@ MIN_CHARS = 5
 # Synthetic examples only (AGENTS.md). No real names, brands, or phones.
 EXAMPLES: dict[str, str] = {
     "scam": (
-        "100% sure profit this week. Share your OTP and pay the registration fee. "
-        "Join VIP Telegram t.me/tipsdemo and act now, only today."
+        "Bhai 100% sure profit, pakka munafa. OTP bhejo, registration fees bharo, "
+        "VIP telegram group join karo — aaj hi, jaldi!"
     ),
     "edu": (
-        "Never share your OTP with anyone. Do not join private Telegram tip groups. "
-        "Ignore messages that promise guaranteed returns. This is a scam warning."
+        "Kabhi bhi OTP mat share karo. Private tip Telegram ignore karo. "
+        "Guaranteed returns wale messages mat kholo. Ye scam warning hai."
     ),
-    "border": "Seats are limited. Reply only today if you want more details.",
+    "border": "Seats limited hain. Sirf aaj reply karo if you want more details.",
 }
 
 _EXAMPLE_ORDER = ("scam", "edu", "border")

@@ -1,8 +1,7 @@
-/* Ruko Zara — UIUX_SPEC §2 tokens, modern layout. Keep under 12 KB. */
+/* Ruko Zara — UIUX tokens, warmer mobile-first UI. Keep under 12 KB. */
 
 :root {
   --bg: #faf7f2;
-  --bg2: #eef3f8;
   --text: #1f2933;
   --muted: #4b5563;
   --primary: #1f4e79;
@@ -17,11 +16,12 @@
   --few-bg: #eaf1f8;
   --few-bd: #1f4e79;
   --few-tx: #12304d;
-  --card: #fff;
+  --card: #ffffff;
   --line: #d9dde3;
-  --shadow: 0 8px 24px rgba(31, 41, 51, 0.06);
+  --shadow: 0 10px 28px rgba(31, 41, 51, 0.07);
+  --shadow-sm: 0 2px 8px rgba(31, 41, 51, 0.05);
   --focus: 3px solid var(--primary);
-  --radius: 12px;
+  --radius: 14px;
   --pad: 16px;
   --tap: 56px;
   --gap: 8px;
@@ -45,24 +45,32 @@ body {
   margin: 0 auto;
   max-width: var(--max);
   width: 100%;
+  min-height: 100dvh;
   min-height: 100vh;
-  padding: var(--pad);
+  padding: max(var(--pad), env(safe-area-inset-top, 0px))
+    max(var(--pad), env(safe-area-inset-right, 0px))
+    max(24px, env(safe-area-inset-bottom, 0px))
+    max(var(--pad), env(safe-area-inset-left, 0px));
   color: var(--text);
   font: 20px/1.6 var(--font);
   overflow-x: hidden;
   word-wrap: break-word;
   overflow-wrap: anywhere;
-  background:
-    radial-gradient(120% 80% at 100% -10%, var(--few-bg) 0%, transparent 55%),
-    radial-gradient(90% 60% at -10% 100%, #f3ebe3 0%, transparent 50%),
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(31, 78, 121, 0.09) 0 6px, transparent 6px),
+    radial-gradient(circle at 12px 18px, rgba(31, 78, 121, 0.07) 1.5px, transparent 2px),
+    radial-gradient(110% 70% at 100% 0%, var(--few-bg) 0%, transparent 55%),
+    radial-gradient(80% 50% at 0% 100%, #f0e6da 0%, transparent 45%),
     var(--bg);
+  background-size: auto, 24px 24px, auto, auto, auto;
 }
 
 .skip-link {
   position: absolute;
   left: -999px;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   padding: 12px 16px;
   background: var(--primary);
   color: var(--primary-fg);
@@ -81,10 +89,12 @@ main {
 
 @keyframes fade-in {
   from {
-    opacity: 0.01;
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
+    transform: none;
   }
 }
 
@@ -104,24 +114,35 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: var(--gap);
-  margin: 0 0 1.5rem;
-  padding: 10px 12px;
-  border: 1px solid rgba(217, 221, 227, 0.9);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.82);
+  margin: 0 0 1.25rem;
+  padding: 8px 10px 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
 }
 
 .brand {
-  color: var(--text);
-  font-size: 26px;
+  color: var(--primary);
+  font-size: 24px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.2;
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   min-height: var(--tap);
   display: inline-flex;
   align-items: center;
+}
+
+.brand::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
 }
 
 .lang-switch {
@@ -149,6 +170,7 @@ textarea:focus-visible {
   font: inherit;
   cursor: pointer;
   transition: background var(--ease), color var(--ease);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lang-switch a[aria-current="true"],
@@ -156,15 +178,24 @@ textarea:focus-visible {
   color: var(--primary-fg);
   font-weight: 700;
   background: var(--primary);
-  text-decoration: none;
+}
+
+.hero-card {
+  margin: 0 0 1rem;
+  padding: 18px 16px 16px;
+  border-radius: calc(var(--radius) + 4px);
+  background: linear-gradient(165deg, #fff 0%, #f7fafc 100%);
+  border: 1px solid rgba(217, 221, 227, 0.95);
+  box-shadow: var(--shadow);
 }
 
 .tagline {
-  margin: 0 0 1.35rem;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  margin: 0 0 1.1rem;
+  font-size: clamp(20px, 5.2vw, 24px);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: var(--few-tx);
 }
 
 .field-label {
@@ -175,11 +206,11 @@ textarea:focus-visible {
 
 .field {
   width: 100%;
-  min-height: 10rem;
+  min-height: 11rem;
   padding: 14px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
-  background: var(--card);
+  background: #fcfcfd;
   color: var(--text);
   font: inherit;
   resize: vertical;
@@ -189,13 +220,15 @@ textarea:focus-visible {
 
 .field:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(31, 78, 121, 0.15);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(31, 78, 121, 0.14);
 }
 
 .hint {
   margin: var(--gap) 0 1rem;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 17px;
+  line-height: 1.45;
 }
 
 #voice-none {
@@ -224,7 +257,7 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
 }
 
 .btn {
@@ -236,26 +269,29 @@ textarea:focus-visible {
   min-height: var(--tap);
   padding: 12px 16px;
   border: 2px solid var(--primary);
-  border-radius: var(--radius);
-  background: var(--primary);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #265f90 0%, var(--primary) 100%);
   color: var(--primary-fg);
   font: inherit;
   font-weight: 700;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(31, 78, 121, 0.18);
-  transition: transform var(--ease), box-shadow var(--ease), background var(--ease);
+  box-shadow: 0 8px 18px rgba(31, 78, 121, 0.22);
+  transition: transform var(--ease), box-shadow var(--ease);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .btn:active {
   transform: translateY(1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn--secondary {
-  background: var(--card);
+  background: #fff;
   color: var(--primary);
-  box-shadow: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn--ghost {
@@ -269,7 +305,7 @@ textarea:focus-visible {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin: 0 0 1.1rem;
+  margin: 0 0 1rem;
   padding: 16px;
   border-radius: var(--radius);
   border: 1px solid transparent;
@@ -281,52 +317,52 @@ textarea:focus-visible {
 }
 
 .level--many {
-  background: var(--many-bg);
+  background: linear-gradient(135deg, var(--many-bg), #fff5f4);
   border-color: var(--many-bd);
   color: var(--many-tx);
 }
 
 .level--some {
-  background: var(--some-bg);
+  background: linear-gradient(135deg, var(--some-bg), #fffaf0);
   border-color: var(--some-bd);
   color: var(--some-tx);
 }
 
 .level--few,
 .level--no_text {
-  background: var(--few-bg);
+  background: linear-gradient(135deg, var(--few-bg), #f5f9fc);
   border-color: var(--few-bd);
   color: var(--few-tx);
 }
 
 .level__icon {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
+  width: 36px;
+  height: 36px;
+  margin-top: 0;
 }
 
 .level__icon svg {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
 }
 
 .level__title {
   margin: 0;
-  font-size: 26px;
+  font-size: clamp(22px, 6vw, 26px);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.02em;
 }
 
 .block {
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.25rem;
 }
 
 .block__title {
-  margin: 0 0 0.75rem;
-  font-size: 22px;
+  margin: 0 0 0.7rem;
+  font-size: 21px;
   font-weight: 700;
   letter-spacing: -0.015em;
 }
@@ -334,11 +370,15 @@ textarea:focus-visible {
 .reason,
 .panel {
   margin: 0 0 10px;
-  padding: 16px;
+  padding: 15px 15px 15px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--card);
-  box-shadow: var(--shadow);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-sm);
+}
+
+.reason {
+  border-left: 4px solid var(--primary);
 }
 
 .reason h3 {
@@ -356,8 +396,9 @@ textarea:focus-visible {
 }
 
 mark {
-  padding: 0 2px;
-  background: transparent;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(31, 78, 121, 0.08);
   color: inherit;
   font-weight: 700;
   text-decoration: underline;
@@ -368,7 +409,7 @@ mark {
 .pause {
   padding: 16px;
   border-radius: var(--radius);
-  background: var(--few-bg);
+  background: linear-gradient(160deg, var(--few-bg), #f8fafc);
   border: 1px solid rgba(31, 78, 121, 0.12);
   border-left: 6px solid var(--few-bd);
   box-shadow: var(--shadow);
@@ -396,7 +437,7 @@ mark {
 }
 
 .report li {
-  margin: 0 0 10px;
+  margin: 0 0 var(--gap);
 }
 
 .report a {
@@ -406,21 +447,26 @@ mark {
   padding: 10px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--card);
+  background: #fff;
   text-decoration: none;
   font-weight: 600;
-  box-shadow: var(--shadow);
-  transition: border-color var(--ease);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--ease), transform var(--ease);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.report a:hover {
-  border-color: var(--primary);
+.report a:active {
+  transform: scale(0.99);
 }
 
 .caveat {
   margin: 1rem 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.65);
   color: var(--muted);
-  font-size: 18px;
+  font-size: 17px;
+  line-height: 1.45;
 }
 
 .card-text {
@@ -428,17 +474,18 @@ mark {
   padding: 14px;
   border-radius: calc(var(--radius) - 2px);
   background: linear-gradient(180deg, var(--few-bg), #f7fafc);
+  border: 1px dashed rgba(31, 78, 121, 0.25);
   color: var(--text);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .site-footer {
-  margin-top: 2.25rem;
-  padding: 1rem 0 0.5rem;
+  margin-top: 2rem;
+  padding: 1rem 0 max(0.5rem, env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .site-footer p {
@@ -453,23 +500,23 @@ mark {
 }
 
 .about section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding: 16px;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.85);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 .about h1 {
   margin: 0 0 1rem;
-  font-size: 26px;
+  font-size: clamp(22px, 6vw, 26px);
   letter-spacing: -0.02em;
 }
 
 .about h2 {
   margin: 0 0 0.5rem;
-  font-size: 22px;
+  font-size: 21px;
 }
 
 .about ul {
@@ -479,6 +526,30 @@ mark {
 
 .about li {
   margin-bottom: 8px;
+}
+
+@media (max-width: 380px) {
+  body {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .site-header {
+    border-radius: var(--radius);
+    padding: 6px 8px;
+  }
+
+  .brand {
+    font-size: 22px;
+  }
+
+  .hero-card {
+    padding: 14px 12px;
+  }
+
+  .field {
+    min-height: 9.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
