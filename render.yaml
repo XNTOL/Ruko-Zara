@@ -1,13 +1,16 @@
-# Optional Render Blueprint (T9). One web service; AI secrets via Dashboard.
+# Render Blueprint — one Docker web service. Set AI secrets in the Dashboard.
 services:
   - type: web
     name: ruko-zara
     runtime: docker
     plan: free
     healthCheckPath: /healthz
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
+      # Off until AI_API_KEY + AI_MODEL are set in the Dashboard.
       - key: AI_ENABLED
-        value: "true"
+        value: "false"
       - key: AI_API_KEY
         sync: false
       - key: AI_BASE_URL

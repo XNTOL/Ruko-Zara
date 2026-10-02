@@ -131,7 +131,7 @@ The validator is the second line of defence against prompt injection. Rules and 
 ## 9. Configuration (`.env.example`)
 
 ```
-AI_ENABLED=true
+AI_ENABLED=false
 AI_API_KEY=
 AI_BASE_URL=https://api.groq.com/openai/v1
 AI_MODEL=

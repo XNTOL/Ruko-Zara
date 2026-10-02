@@ -40,7 +40,7 @@ _daily_count = 0
 _daily_date: date | None = None
 
 
-def _env_bool(name: str, default: bool = True) -> bool:
+def _env_bool(name: str, default: bool = False) -> bool:
     raw = os.getenv(name)
     if raw is None:
         return default

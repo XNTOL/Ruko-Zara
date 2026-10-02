@@ -98,6 +98,16 @@ async def unhandled_error(request: Request, exc: Exception) -> HTMLResponse:
     )
 
 
+def _client_ip(request: Request) -> str:
+    """Prefer first X-Forwarded-For hop (Render); fall back to socket peer."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    if request.client and request.client.host:
+        return request.client.host
+    return ""
+
+
 @app.get("/healthz")
 def healthz() -> dict[str, bool]:
     return {"ok": True}
@@ -162,7 +172,7 @@ async def check(
     result = assess(trimmed)
     masked = mask_sensitive(trimmed)
     started = time.perf_counter()
-    client_ip = request.client.host if request.client else ""
+    client_ip = _client_ip(request)
     summary = explain(masked, result, lang, client_ip=client_ip)
     latency_ms = int((time.perf_counter() - started) * 1000)
     # One log line: no message text (G3).

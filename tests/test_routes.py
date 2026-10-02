@@ -20,6 +20,22 @@ def test_healthz_ok():
     assert response.json() == {"ok": True}
 
 
+def test_client_ip_prefers_x_forwarded_for():
+    from unittest.mock import MagicMock
+
+    from app.main import _client_ip
+
+    request = MagicMock()
+    request.headers = {"x-forwarded-for": "203.0.113.10, 10.0.0.1"}
+    request.client = MagicMock(host="10.0.0.1")
+    assert _client_ip(request) == "203.0.113.10"
+
+    bare = MagicMock()
+    bare.headers = {}
+    bare.client = MagicMock(host="192.0.2.1")
+    assert _client_ip(bare) == "192.0.2.1"
+
+
 def test_index_renders_form():
     response = client.get("/")
     assert response.status_code == 200
