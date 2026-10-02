@@ -1,0 +1,24 @@
+# Optional Render Blueprint (T9). One web service; AI secrets via Dashboard.
+services:
+  - type: web
+    name: ruko-zara
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: AI_ENABLED
+        value: "true"
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: AI_MODEL
+        sync: false
+      - key: AI_TIMEOUT_S
+        value: "4"
+      - key: MAX_CHARS
+        value: "2000"
+      - key: RATE_LIMIT_PER_MIN
+        value: "12"
+      - key: DAILY_AI_CAP
+        value: "500"

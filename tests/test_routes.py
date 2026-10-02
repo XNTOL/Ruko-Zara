@@ -232,3 +232,15 @@ def test_warning_card_has_rule_titles_only():
     js = client.get("/static/app.js").text
     assert "btn-copy" in js
     assert "clipboard" in js
+
+
+def test_dockerfile_binds_port_and_warmup_exists():
+    """T9: Docker image + warm-up helper."""
+    root = Path(__file__).resolve().parents[1]
+    dockerfile = (root / "Dockerfile").read_text(encoding="utf-8")
+    assert "0.0.0.0" in dockerfile
+    assert "$PORT" in dockerfile or "${PORT" in dockerfile
+    assert "uvicorn app.main:app" in dockerfile
+    warmup = root / "scripts" / "warmup.py"
+    assert warmup.is_file()
+    assert "/healthz" in warmup.read_text(encoding="utf-8")
