@@ -74,6 +74,22 @@ STRINGS: dict[str, dict[str, str]] = {
             " सेबी या एनएसडीएल की आधिकारिक सेवा नहीं।"
         ),  # REVIEW
         "about_link": "इस ऐप के बारे में",  # REVIEW
+        "lang_hi": "हिन्दी",  # REVIEW
+        "lang_en": "EN",
+        "about_title": "इस ऐप के बारे में",  # REVIEW
+        "about_how_heading": "यह कैसे काम करता है",  # REVIEW
+        "about_how_body": (
+            "आप एक संदेश चिपकाते हैं। नियम आम चेतावनी शब्दों को ढूँढते हैं।"
+            " ऐप संकेत दिखाता है और पैसे भेजने से पहले रुकने को कहता है।"
+            " नियम स्तर तय करते हैं। एआई केवल एक छोटा सारांश लिख सकता है।"
+        ),  # REVIEW
+        "about_storage_heading": "क्या सेव होता है",  # REVIEW
+        "about_storage_body": (
+            "कुछ नहीं। आपका संदेश सेव नहीं होता।"
+            " कोई खाता नहीं, कोई कुकी नहीं।"
+        ),  # REVIEW
+        "about_limits_heading": "ईमानदार सीमाएँ",  # REVIEW
+        "back_home": "जाँच पर वापस जाएँ",  # REVIEW
     },
     "en": {
         "app_title": "Ruko Zara",
@@ -131,7 +147,43 @@ STRINGS: dict[str, dict[str, str]] = {
             " It is not an official SEBI or NSDL service."
         ),
         "about_link": "About this app",
+        "lang_hi": "हिन्दी",
+        "lang_en": "EN",
+        "about_title": "About this app",
+        "about_how_heading": "How it works",
+        "about_how_body": (
+            "You paste a message. Rules look for common warning words."
+            " The app shows the signs and asks you to pause before you send money."
+            " Rules set the level. AI may write one short summary only."
+        ),
+        "about_storage_heading": "What is stored",
+        "about_storage_body": (
+            "Nothing. Your message is not saved."
+            " There are no accounts and no cookies."
+        ),
+        "about_limits_heading": "Honest limits",
+        "back_home": "Back to check",
     },
+}
+
+# PRODUCT_SPEC §9 — shown on /about.
+ABOUT_LIMITS: dict[str, list[str]] = {
+    "hi": [
+        "नियम केवल शब्दों को पढ़ते हैं। नई चालें और गलत वर्तनी छूट सकती हैं।",  # REVIEW
+        "यह टूल नहीं जानता कि संदेश किसने भेजा।",  # REVIEW
+        "यह टूल सेबी नंबर की जाँच नहीं कर सकता। सेबी की अपनी खोज कर सकती है।",  # REVIEW
+        "हिन्दी आवाज़ फ़ोन पर निर्भर करती है।",  # REVIEW
+        "एआई सारांश में गलती हो सकती है।",  # REVIEW
+        "मुफ़्त होस्ट को जागने में कुछ सेकंड लग सकते हैं।",  # REVIEW
+    ],
+    "en": [
+        "Rules read words. New tricks and spelling changes can slip past.",
+        "The tool does not know who sent the message.",
+        "The tool cannot verify a SEBI number. SEBI's own search can.",
+        "Hindi voice depends on the phone.",
+        "The AI summary can contain mistakes.",
+        "A free host may need a few seconds to wake up.",
+    ],
 }
 
 # Moved from rules.py in T1.

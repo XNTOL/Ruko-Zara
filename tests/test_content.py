@@ -9,6 +9,7 @@ import pytest
 
 from app import content
 from app.content import (
+    ABOUT_LIMITS,
     ALLOWED_URLS,
     CAVEAT,
     LEVELS,
@@ -74,6 +75,7 @@ def test_no_forbidden_advice_or_safe_words_in_copy():
     for lang in ("hi", "en"):
         blobs.extend(STRINGS[lang].values())
         blobs.append(CAVEAT[lang])
+        blobs.extend(ABOUT_LIMITS[lang])
         for level in LEVELS.values():
             blobs.append(level[lang])
         for rule in TEXT.values():

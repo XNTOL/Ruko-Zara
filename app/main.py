@@ -1,16 +1,19 @@
-"""FastAPI entrypoint: health check + tracer-bullet check flow (T2)."""
+"""FastAPI entrypoint: routes, templates, security headers."""
 
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.content import CAVEAT, LEVELS, STRINGS, TEXT, t as t_str
-from app.rules import Result, assess
+from app.content import STRINGS
+from app.rules import assess
+from app.view import build_about, build_index, build_view
 
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -33,29 +36,58 @@ EXAMPLES: dict[str, str] = {
     "border": "Seats are limited. Reply only today if you want more details.",
 }
 
+_EXAMPLE_ORDER = ("scam", "edu", "border")
+
+_SECURITY_HEADERS = {
+    "Content-Security-Policy": (
+        "default-src 'self'; script-src 'self'; style-src 'self'; "
+        "img-src 'self' data:; base-uri 'none'; form-action 'self'"
+    ),
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+}
+
 
 def _lang(value: str | None) -> str:
     return "en" if (value or "").lower() == "en" else "hi"
 
 
-def _strings(lang: str) -> dict[str, str]:
-    return STRINGS["en" if lang == "en" else "hi"]
+def _next_example(current: str | None) -> str:
+    if current in _EXAMPLE_ORDER:
+        idx = (_EXAMPLE_ORDER.index(current) + 1) % len(_EXAMPLE_ORDER)
+        return _EXAMPLE_ORDER[idx]
+    return "scam"
 
 
-def _reasons(result: Result, lang: str) -> list[dict[str, object]]:
-    code = "en" if lang == "en" else "hi"
-    out: list[dict[str, object]] = []
-    for finding in result.findings:
-        copy = TEXT[finding.rule]
-        out.append(
-            {
-                "rule": finding.rule,
-                "title": copy["title"][code],
-                "why": copy["why"][code],
-                "evidence": list(finding.evidence),
-            }
-        )
-    return out
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    for key, value in _SECURITY_HEADERS.items():
+        response.headers[key] = value
+    if request.url.path == "/check":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.exception_handler(Exception)
+async def unhandled_error(request: Request, exc: Exception) -> HTMLResponse:
+    if isinstance(exc, (HTTPException, StarletteHTTPException, RequestValidationError)):
+        raise exc
+    lang = _lang(request.query_params.get("lang"))
+    strings = STRINGS[lang]
+    return templates.TemplateResponse(
+        request,
+        "error.html",
+        {
+            "lang": lang,
+            "t": strings,
+            "other_lang": "en" if lang == "hi" else "hi",
+            "page_kind": "error",
+            "page_title": strings["error_server"],
+            "example": "",
+        },
+        status_code=500,
+    )
 
 
 @app.get("/healthz")
@@ -70,17 +102,22 @@ def index(
     example: str | None = None,
 ) -> HTMLResponse:
     lang = _lang(lang)
-    message = EXAMPLES.get(example or "", "")
-    return templates.TemplateResponse(
-        request,
-        "index.html",
-        {
-            "lang": lang,
-            "t": _strings(lang),
-            "message": message,
-            "error": None,
-        },
+    key = example if example in EXAMPLES else None
+    vm = build_index(
+        lang,
+        message=EXAMPLES.get(key or "", ""),
+        error=None,
+        example=key,
+        next_example=_next_example(key),
     )
+    return templates.TemplateResponse(request, "index.html", vm)
+
+
+@app.get("/about", response_class=HTMLResponse)
+def about(request: Request, lang: str = "hi") -> HTMLResponse:
+    vm = build_about(_lang(lang))
+    vm["example"] = ""
+    return templates.TemplateResponse(request, "about.html", vm)
 
 
 @app.post("/check", response_class=HTMLResponse)
@@ -90,7 +127,6 @@ async def check(
     lang: str = Form("hi"),
 ) -> HTMLResponse:
     lang = _lang(lang)
-    strings = _strings(lang)
     trimmed = (message or "").strip()
 
     error_key: str | None = None
@@ -100,34 +136,23 @@ async def check(
         error_key = "error_long"
 
     if error_key:
+        strings = STRINGS[lang]
+        vm = build_index(
+            lang,
+            message=message,
+            error=strings[error_key],
+            example=None,
+            next_example="scam",
+        )
         return templates.TemplateResponse(
             request,
             "index.html",
-            {
-                "lang": lang,
-                "t": strings,
-                "message": message,
-                "error": strings[error_key],
-            },
+            vm,
             status_code=422,
         )
 
     result = assess(trimmed)
-    code = "en" if lang == "en" else "hi"
-    level_title = LEVELS[result.level][code]
-    reasons = _reasons(result, lang)
-
-    return templates.TemplateResponse(
-        request,
-        "result.html",
-        {
-            "lang": lang,
-            "t": strings,
-            "level": result.level,
-            "level_title": level_title,
-            "reasons": reasons,
-            "caveat": CAVEAT[code],
-            "section_none": t_str(lang, "section_none"),
-        },
-        status_code=200,
-    )
+    # AI summary comes in T7; tracer keeps summary None so the app works AI-off.
+    vm = build_view(result, summary=None, lang=lang)
+    vm["example"] = ""
+    return templates.TemplateResponse(request, "result.html", vm, status_code=200)

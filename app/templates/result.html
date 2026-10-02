@@ -1,36 +1,89 @@
-<!DOCTYPE html>
-<html lang="{{ lang }}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ level_title }}</title>
-</head>
-<body>
-  <h1>{{ t.app_title }}</h1>
+{% extends "base.html" %}
 
+{% block title %}{{ level_title }}{% endblock %}
+
+{% block content %}
+  {# 1. Level #}
   <section data-level="{{ level }}">
-    <h2>{{ level_title }}</h2>
+    <h1>{{ level_title }}</h1>
   </section>
 
-  <h3>{{ t.section_reasons }}</h3>
-  {% if reasons %}
-    {% for reason in reasons %}
-    <section data-rule="{{ reason.rule }}">
-      <h4>{{ reason.title }}</h4>
-      <p>{{ reason.why }}</p>
-      <p>{{ t.matched }}
-        {% for item in reason.evidence %}
-        <mark>{{ item }}</mark>{% if not loop.last %}, {% endif %}
-        {% endfor %}
-      </p>
-    </section>
-    {% endfor %}
-  {% else %}
-    <p>{{ section_none }}</p>
+  {# 2. Listen (wired in T5) #}
+  <p>
+    <button type="button" id="btn-listen" data-speak="{{ speak_text }}">{{ t.btn_listen }}</button>
+  </p>
+
+  {# 3. Reasons (FR-3) #}
+  <section>
+    <h2>{{ t.section_reasons }}</h2>
+    {% if reasons %}
+      {% for reason in reasons %}
+      <article data-rule="{{ reason.rule }}">
+        <h3>{{ reason.title }}</h3>
+        <p>{{ reason.why }}</p>
+        <p>{{ t.matched }}
+          {% for item in reason.evidence %}
+          <mark>{{ item }}</mark>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p>{{ t.section_none }}</p>
+    {% endif %}
+  </section>
+
+  {# 4. AI summary — only when present (T7) #}
+  {% if summary %}
+  <section data-ai="1">
+    <p>{{ t.ai_label }}</p>
+    <p>{{ summary }}</p>
+  </section>
   {% endif %}
 
-  <p>{{ caveat }}</p>
+  {# 5. SEBI block (FR-6) #}
+  {% if sebi.show %}
+  <section data-sebi="1">
+    {% for entry in sebi.numbers %}
+    <p>{{ entry.text }}</p>
+    <p>
+      <a href="{{ entry.check_at }}" rel="noopener noreferrer">{{ entry.btn }}</a>
+    </p>
+    {% endfor %}
+    {% if sebi.claim_without_number %}
+    <p>{{ sebi.claim_text }}</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {# 6–7. Pause + report (shown at every level; tested in T6) #}
+  <section data-pause="1">
+    <h2>{{ pause.title }}</h2>
+    <ol>
+      {% for step in pause.steps %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section data-report="1">
+    <h2>{{ pause.report_title }}</h2>
+    <ul>
+      {% for item in pause.report %}
+      <li>
+        {% if item.href %}
+        <a href="{{ item.href }}" rel="noopener noreferrer">{{ item.text }}</a>
+        {% else %}
+        {{ item.text }}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {# 9. Caveat (FR-3) #}
+  <p data-caveat="1">{{ caveat }}</p>
+
+  {# 10. Check another #}
   <p><a href="/?lang={{ lang }}">{{ t.btn_again }}</a></p>
-  <p>{{ t.footer }}</p>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ page_title | default(t.app_title) }}{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <a href="/?lang={{ lang }}">{{ t.app_title }}</a>
+    <nav aria-label="language">
+      {% if page_kind == "result" %}
+      <a href="/?lang=hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
+      <a href="/?lang=en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
+      {% else %}
+      <a href="?lang=hi{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
+      <a href="?lang=en{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>{{ t.footer }}</p>
+    {% if page_kind != "about" %}
+    <p><a href="/about?lang={{ lang }}">{{ t.about_link }}</a></p>
+    {% endif %}
+  </footer>
+</body>
+</html>
