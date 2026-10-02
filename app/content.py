@@ -9,7 +9,7 @@ from __future__ import annotations
 # Official links only. A person must verify these before submission (G6).
 LINKS: dict[str, str] = {
     "helpline": "tel:1930",
-    "cybercrime": "https://www.cybercrime.gov.in/",
+    "cybercrime": "https://cybercrime.gov.in/",
     "scores": "https://scores.sebi.gov.in/",
     "sebi_check": "https://www.sebi.gov.in/sebiweb/other/OtherAction.do?doRecognised=yes",
 }

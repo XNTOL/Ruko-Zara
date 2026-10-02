@@ -8,7 +8,7 @@ Status key: **DONE** = automated or verified in repo · **HUMAN** = needs a pers
 | G1–G6 tests pass | DONE | `test_content`, `test_routes`, `test_explain`, `test_privacy`, `test_budget_a11y` (93 pass, 1 xfail) |
 | Test corpus ≥ 20 synthetic messages (hi / en / Hinglish; scam, edu, borderline) | DONE | `tests/test_rules.py` CORPUS |
 | Native Hindi reader approved every Hindi string; no `# REVIEW` | PENDING | `# REVIEW` still on Hindi in `app/content.py`; `test_no_review_tags_remain` is xfail until cleared |
-| 1930, cybercrime.gov.in, SEBI SCORES opened and checked on submission day | HUMAN | Wired in repo: `tel:1930`, `https://www.cybercrime.gov.in/`, `https://scores.sebi.gov.in/` only via `app/content.py` (G6); bank/UPI is a non-link note |
+| 1930, cybercrime.gov.in, SEBI SCORES opened and checked on submission day | HUMAN | Wired in repo: `tel:1930`, `https://cybercrime.gov.in/`, `https://scores.sebi.gov.in/` only via `app/content.py` (G6); bank/UPI is a non-link note |
 | Page weight and accessibility budgets pass | DONE | `tests/test_budget_a11y.py` + UIUX §8 CSS rules |
 | Live link works on a phone on mobile data | HUMAN | Live: https://ruko-zara.onrender.com (`/healthz` ok); confirm on phone + mobile data; warm with `scripts/warmup.py` |
 
