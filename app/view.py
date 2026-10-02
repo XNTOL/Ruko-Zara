@@ -53,15 +53,33 @@ def _pause(lang: str) -> dict[str, object]:
         "title": strings["pause_title"],
         "steps": [strings["pause_1"], strings["pause_2"], strings["pause_3"]],
         "report_title": strings["report_title"],
+        "report_bank_hint": strings["report_bank_hint"],
+        "report_call_hint": strings["report_call_hint"],
         "report": [
-            {"key": "1930", "text": strings["report_1930"], "href": LINKS["helpline"]},
+            {
+                "key": "1930",
+                "kind": "call",
+                "text": strings["report_1930"],
+                "href": LINKS["helpline"],
+            },
             {
                 "key": "portal",
+                "kind": "web",
                 "text": strings["report_portal"],
                 "href": LINKS["cybercrime"],
             },
-            {"key": "scores", "text": strings["report_scores"], "href": LINKS["scores"]},
-            {"key": "bank", "text": strings["report_bank"], "href": None},
+            {
+                "key": "scores",
+                "kind": "web",
+                "text": strings["report_scores"],
+                "href": LINKS["scores"],
+            },
+            {
+                "key": "bank",
+                "kind": "note",
+                "text": strings["report_bank"],
+                "href": None,
+            },
         ],
     }
 

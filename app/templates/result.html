@@ -90,11 +90,27 @@
     <h2 class="block__title" data-i18n-report-title>{{ pause.report_title }}</h2>
     <ul class="report">
       {% for item in pause.report %}
-      <li data-report-key="{{ item.key }}">
-        {% if item.href %}
-        <a href="{{ item.href }}" rel="noopener noreferrer" data-i18n-report-text>{{ item.text }}</a>
+      <li data-report-key="{{ item.key }}" data-report-kind="{{ item.kind }}">
+        {% if item.kind == "call" %}
+        <a
+          class="report-link report-link--call"
+          href="{{ item.href }}"
+          data-i18n-report-text
+        >{{ item.text }}</a>
+        <p class="report-hint report-hint--call" data-i18n-call-hint>{{ pause.report_call_hint }}</p>
+        {% elif item.kind == "web" %}
+        <a
+          class="report-link report-link--web"
+          href="{{ item.href }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-i18n-report-text
+        >{{ item.text }}</a>
         {% else %}
-        <span class="panel" data-i18n-report-text>{{ item.text }}</span>
+        <div class="report-note" role="note">
+          <p class="report-note__label" data-i18n-bank-hint>{{ pause.report_bank_hint }}</p>
+          <p class="report-note__text" data-i18n-report-text>{{ item.text }}</p>
+        </div>
         {% endif %}
       </li>
       {% endfor %}

@@ -4,11 +4,14 @@
   function $(id) {
     return document.getElementById(id);
   }
+  function q(s) {
+    return document.querySelector(s);
+  }
   function setText(el, v) {
     if (el && v != null) el.textContent = v;
   }
 
-  var form = document.querySelector('form[action="/check"]');
+  var form = q('form[action="/check"]');
   if (form) {
     form.addEventListener("submit", function () {
       var b = form.querySelector('button[type="submit"]');
@@ -112,54 +115,54 @@
     prefix = locale.slice(0, 2);
     document.documentElement.lang = lang;
     document.title = pack.level_title || document.title;
-    setText(document.querySelector("[data-i18n-brand]"), t.app_title);
-    setText(document.querySelector("[data-i18n-footer]"), t.footer);
-    var about = document.querySelector("[data-i18n-about-link]");
+    setText(q("[data-i18n-brand]"), t.app_title);
+    setText(q("[data-i18n-footer]"), t.footer);
+    var about = q("[data-i18n-about-link]");
     if (about) {
       about.textContent = t.about_link;
       about.setAttribute("href", "/about?lang=" + lang);
     }
-    setText(document.querySelector('[data-i18n="level_title"]'), pack.level_title);
-    setText(document.querySelector('[data-i18n="section_reasons"]'), t.section_reasons);
-    setText(document.querySelector('[data-i18n="section_none"]'), pack.section_none);
-    setText(document.querySelector('[data-i18n="matched"]'), t.matched);
-    setText(document.querySelector('[data-i18n="caveat"]'), pack.caveat);
-    setText(document.querySelector('[data-i18n="ai_label"]'), t.ai_label);
-    var ai = document.querySelector('[data-ai="1"]');
+    setText(q('[data-i18n="level_title"]'), pack.level_title);
+    setText(q('[data-i18n="section_reasons"]'), t.section_reasons);
+    setText(q('[data-i18n="section_none"]'), pack.section_none);
+    setText(q('[data-i18n="matched"]'), t.matched);
+    setText(q('[data-i18n="caveat"]'), pack.caveat);
+    setText(q('[data-i18n="ai_label"]'), t.ai_label);
+    var ai = q('[data-ai="1"]');
     if (ai) {
       if (pack.summary) {
         ai.hidden = false;
-        setText(document.querySelector("[data-i18n-summary]"), pack.summary);
+        setText(q("[data-i18n-summary]"), pack.summary);
       } else ai.hidden = true;
     }
     (pack.reasons || []).forEach(function (r) {
-      var a = document.querySelector('.reason[data-rule="' + r.rule + '"]');
+      var a = q('.reason[data-rule="' + r.rule + '"]');
       if (!a) return;
       setText(a.querySelector("[data-i18n-reason-title]"), r.title);
       setText(a.querySelector("[data-i18n-reason-why]"), r.why);
     });
     var pause = pack.pause || {};
-    setText(document.querySelector("[data-i18n-pause-title]"), pause.title);
+    setText(q("[data-i18n-pause-title]"), pause.title);
     (pause.steps || []).forEach(function (step, s) {
-      setText(document.querySelector('[data-i18n-pause-step="' + s + '"]'), step);
+      setText(q('[data-i18n-pause-step="' + s + '"]'), step);
     });
-    setText(document.querySelector("[data-i18n-report-title]"), pause.report_title);
+    setText(q("[data-i18n-report-title]"), pause.report_title);
+    setText(q("[data-i18n-call-hint]"), pause.report_call_hint);
+    setText(q("[data-i18n-bank-hint]"), pause.report_bank_hint);
     (pause.report || []).forEach(function (item) {
-      var li = document.querySelector('[data-report-key="' + item.key + '"]');
+      var li = q('[data-report-key="' + item.key + '"]');
       if (li) setText(li.querySelector("[data-i18n-report-text]"), item.text);
     });
     var sebi = pack.sebi || {};
     (sebi.numbers || []).forEach(function (n) {
       setText(
-        document.querySelector(
-          '[data-i18n-sebi-text][data-sebi-number="' + n.number + '"]'
-        ),
+        q('[data-i18n-sebi-text][data-sebi-number="' + n.number + '"]'),
         n.text
       );
-      setText(document.querySelector("[data-i18n-sebi-btn]"), n.btn);
+      setText(q("[data-i18n-sebi-btn]"), n.btn);
     });
-    setText(document.querySelector("[data-i18n-sebi-claim]"), sebi.claim_text);
-    setText(document.querySelector("[data-i18n-card-title]"), t.card_title);
+    setText(q("[data-i18n-sebi-claim]"), sebi.claim_text);
+    setText(q("[data-i18n-card-title]"), t.card_title);
     setText($("card-text"), pack.card_text);
     var cBtn = $("btn-copy");
     if (cBtn) {
@@ -167,12 +170,12 @@
       cBtn.setAttribute("data-label-copied", t.copied || "");
       cBtn.textContent = t.btn_copy || cBtn.textContent;
     }
-    var again = document.querySelector("[data-i18n-again]");
+    var again = q("[data-i18n-again]");
     if (again) {
       again.textContent = t.btn_again;
       again.setAttribute("href", "/?lang=" + lang);
     }
-    var brand = document.querySelector("[data-i18n-brand]");
+    var brand = q("[data-i18n-brand]");
     if (brand) brand.setAttribute("href", "/?lang=" + lang);
     document.querySelectorAll(".lang-opt").forEach(function (el) {
       if (el.getAttribute("data-set-lang") === lang)

@@ -46,10 +46,12 @@ STRINGS: dict[str, dict[str, str]] = {
         "pause_2": "OTP, पिन या पासवर्ड किसी को न बताएं।",  # REVIEW
         "pause_3": "परिवार के किसी भरोसेमंद व्यक्ति से बात करें।",  # REVIEW
         "report_title": "पैसे चले गए हों या शक हो, तो यहाँ बताएँ",  # REVIEW
-        "report_1930": "साइबर ठगी हेल्पलाइन: 1930 (हर समय चालू)",  # REVIEW
-        "report_portal": "cybercrime.gov.in पर शिकायत करें",  # REVIEW
-        "report_scores": "ब्रोकर या म्यूचुअल फंड की शिकायत: सेबी SCORES",  # REVIEW
+        "report_1930": "कॉल करें — साइबर ठगी हेल्पलाइन 1930",  # REVIEW
+        "report_portal": "cybercrime.gov.in पर शिकायत दर्ज करें",  # REVIEW
+        "report_scores": "सेबी SCORES पर शिकायत करें (ब्रोकर / म्यूचुअल फंड)",  # REVIEW
         "report_bank": "अपने बैंक या UPI ऐप को तुरंत बताएँ",  # REVIEW
+        "report_bank_hint": "यह एक याद दिलाने वाला नोट है — कोई वेबसाइट लिंक नहीं।",  # REVIEW
+        "report_call_hint": "फ़ोन पर टैप करें — डायल पैड खुलेगा।",  # REVIEW
         "sebi_found": (
             "संदेश में यह नंबर मिला: {number}।"
             " यह टूल इसकी जाँच नहीं कर सकता।"
@@ -119,10 +121,12 @@ STRINGS: dict[str, dict[str, str]] = {
         "pause_2": "Do not tell anyone an OTP, PIN, or password.",
         "pause_3": "Talk to a family member you trust.",
         "report_title": "If money is gone, or you have a doubt, report here",
-        "report_1930": "Cyber fraud helpline: 1930 (open at all hours)",
+        "report_1930": "Call cyber fraud helpline 1930",
         "report_portal": "File a complaint at cybercrime.gov.in",
-        "report_scores": "Complaint about a broker or mutual fund: SEBI SCORES",
+        "report_scores": "Open SEBI SCORES (broker or mutual fund complaint)",
         "report_bank": "Tell your bank or UPI app at once",
+        "report_bank_hint": "Reminder only — not a website link.",
+        "report_call_hint": "On a phone, tap to open the dial pad.",
         "sebi_found": (
             "This number was found in the message: {number}."
             " This tool cannot verify it."

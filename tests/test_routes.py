@@ -222,10 +222,19 @@ def test_pause_and_report_on_all_levels():
         assert 'data-pause="1"' in html
         assert 'data-report="1"' in html
         assert "Do not send money" in html
-        assert "tel:1930" in html
-        assert "cybercrime.gov.in" in html or LINKS["cybercrime"] in html
-        assert "scores.sebi.gov.in" in html or LINKS["scores"] in html
+        assert 'href="tel:1930"' in html
+        assert 'report-link--call' in html
+        assert f'href="{LINKS["cybercrime"]}"' in html
+        assert f'href="{LINKS["scores"]}"' in html
+        assert "report-link--web" in html
         assert "bank or UPI" in html
+        assert 'data-report-key="bank"' in html
+        assert 'data-report-kind="note"' in html
+        assert "report-note" in html
+        # Bank reminder must not be an <a> (non-interactive note).
+        bank_block = html.split('data-report-key="bank"')[1].split("</li>")[0]
+        assert "<a " not in bank_block
+        assert 'href="' not in bank_block
 
 
 def test_warning_card_has_rule_titles_only():
