@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ level_title }}</title>
+</head>
+<body>
+  <h1>{{ t.app_title }}</h1>
+
+  <section data-level="{{ level }}">
+    <h2>{{ level_title }}</h2>
+  </section>
+
+  <h3>{{ t.section_reasons }}</h3>
+  {% if reasons %}
+    {% for reason in reasons %}
+    <section data-rule="{{ reason.rule }}">
+      <h4>{{ reason.title }}</h4>
+      <p>{{ reason.why }}</p>
+      <p>{{ t.matched }}
+        {% for item in reason.evidence %}
+        <mark>{{ item }}</mark>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+    </section>
+    {% endfor %}
+  {% else %}
+    <p>{{ section_none }}</p>
+  {% endif %}
+
+  <p>{{ caveat }}</p>
+  <p><a href="/?lang={{ lang }}">{{ t.btn_again }}</a></p>
+  <p>{{ t.footer }}</p>
+</body>
+</html>

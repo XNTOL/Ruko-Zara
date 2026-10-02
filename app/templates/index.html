@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t.app_title }}</title>
+</head>
+<body>
+  <h1>{{ t.app_title }}</h1>
+  <p>{{ t.tagline }}</p>
+
+  {% if error %}
+  <p id="form-error" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="/check">
+    <input type="hidden" name="lang" value="{{ lang }}">
+    <label for="message">{{ t.input_label }}</label>
+    <textarea id="message" name="message" rows="8" maxlength="2000">{{ message }}</textarea>
+    <p>{{ t.privacy_hint }}</p>
+    <button type="submit">{{ t.btn_check }}</button>
+  </form>
+
+  <p>
+    <a href="/?lang={{ lang }}&amp;example=scam">{{ t.btn_example }}</a>
+  </p>
+</body>
+</html>
