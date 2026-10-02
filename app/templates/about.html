@@ -3,26 +3,30 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-  <h1>{{ t.about_title }}</h1>
+  <article class="about">
+    <h1>{{ t.about_title }}</h1>
 
-  <section>
-    <h2>{{ t.about_how_heading }}</h2>
-    <p>{{ t.about_how_body }}</p>
-  </section>
+    <section>
+      <h2>{{ t.about_how_heading }}</h2>
+      <p>{{ t.about_how_body }}</p>
+    </section>
 
-  <section>
-    <h2>{{ t.about_storage_heading }}</h2>
-    <p>{{ t.about_storage_body }}</p>
-  </section>
+    <section>
+      <h2>{{ t.about_storage_heading }}</h2>
+      <p>{{ t.about_storage_body }}</p>
+    </section>
 
-  <section>
-    <h2>{{ t.about_limits_heading }}</h2>
-    <ul>
-      {% for item in limits %}
-      <li>{{ item }}</li>
-      {% endfor %}
-    </ul>
-  </section>
+    <section>
+      <h2>{{ t.about_limits_heading }}</h2>
+      <ul>
+        {% for item in limits %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </section>
 
-  <p><a href="/?lang={{ lang }}">{{ t.back_home }}</a></p>
+    <p class="actions">
+      <a class="btn btn--secondary" href="/?lang={{ lang }}">{{ t.back_home }}</a>
+    </p>
+  </article>
 {% endblock %}

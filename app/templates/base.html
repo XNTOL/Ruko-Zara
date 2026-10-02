@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ page_title | default(t.app_title) }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
-  <header>
-    <a href="/?lang={{ lang }}">{{ t.app_title }}</a>
-    <nav aria-label="language">
+  <header class="site-header">
+    <a class="brand" href="/?lang={{ lang }}">{{ t.app_title }}</a>
+    <nav class="lang-switch" aria-label="language">
       {% if page_kind == "result" %}
       <a href="/?lang=hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
       <a href="/?lang=en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
+      {% elif page_kind == "about" %}
+      <a href="/about?lang=hi" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
+      <a href="/about?lang=en" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
       {% else %}
-      <a href="?lang=hi{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
-      <a href="?lang=en{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
+      <a href="/?lang=hi{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "hi" %}aria-current="true"{% endif %}>{{ t.lang_hi }}</a>
+      <a href="/?lang=en{% if example %}&amp;example={{ example }}{% endif %}" {% if lang == "en" %}aria-current="true"{% endif %}>{{ t.lang_en }}</a>
       {% endif %}
     </nav>
   </header>
@@ -23,11 +27,12 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer>
+  <footer class="site-footer">
     <p>{{ t.footer }}</p>
     {% if page_kind != "about" %}
     <p><a href="/about?lang={{ lang }}">{{ t.about_link }}</a></p>
     {% endif %}
   </footer>
+  <script src="/static/app.js" defer></script>
 </body>
 </html>

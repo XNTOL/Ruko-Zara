@@ -1,6 +1,8 @@
-"""Route tests: tracer bullet + T3 (FR-3, FR-6, FR-11)."""
+"""Route tests: tracer bullet + T3 (FR-3, FR-6, FR-11) + T4 CSS."""
 
 from __future__ import annotations
+
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -117,3 +119,63 @@ def test_result_has_no_full_message_echo():
     response = client.post("/check", data={"message": message, "lang": "en"})
     assert response.status_code == 200
     assert marker not in response.text
+
+
+def test_css_linked_and_under_budget():
+    css_path = Path(__file__).resolve().parents[1] / "app" / "static" / "app.css"
+    size = css_path.stat().st_size
+    assert size <= 12 * 1024, f"app.css is {size} bytes"
+    home = client.get("/")
+    assert 'href="/static/app.css"' in home.text
+    css = client.get("/static/app.css")
+    assert css.status_code == 200
+    assert b"--primary" in css.content
+    assert b"--many-bg" in css.content
+
+
+def test_language_switch_marks_active():
+    hi = client.get("/?lang=hi")
+    assert 'aria-current="true"' in hi.text
+    assert "lang-switch" in hi.text
+    # Active Hindi link appears before EN in nav
+    assert hi.text.index('aria-current="true"') < hi.text.index(">EN<")
+
+    en = client.get("/?lang=en")
+    assert 'href="/?lang=en"' in en.text or 'href="/?lang=en' in en.text
+    # EN is current
+    assert en.text.count('aria-current="true"') >= 1
+
+
+def test_result_level_card_has_icon_and_no_green():
+    response = client.post("/check", data={"message": SCAM, "lang": "en"})
+    html = response.text
+    assert "level--many" in html
+    assert "level__icon" in html
+    assert "<svg" in html
+    css = client.get("/static/app.css").text.lower()
+    assert "green" not in css
+    assert "#22c55e" not in css
+    assert "checkmark" not in css
+
+
+def test_js_listen_wired_and_under_budget():
+    js_path = Path(__file__).resolve().parents[1] / "app" / "static" / "app.js"
+    size = js_path.stat().st_size
+    assert size <= 8 * 1024, f"app.js is {size} bytes"
+    home = client.get("/")
+    assert 'src="/static/app.js"' in home.text
+    assert 'data-loading=' in home.text
+    js = client.get("/static/app.js")
+    assert js.status_code == 200
+    assert b"speechSynthesis" in js.content
+    assert b"voice-none" in js.content
+
+    result = client.post("/check", data={"message": SCAM, "lang": "hi"})
+    html = result.text
+    assert 'id="btn-listen"' in html
+    assert "data-speak=" in html
+    assert "data-label-listen=" in html
+    assert "data-label-stop=" in html
+    assert 'id="voice-none"' in html
+    assert "सुनें" in html
+    assert "रोकें" in html or "data-label-stop" in html

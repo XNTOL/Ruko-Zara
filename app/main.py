@@ -8,6 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -156,3 +157,6 @@ async def check(
     vm = build_view(result, summary=None, lang=lang)
     vm["example"] = ""
     return templates.TemplateResponse(request, "result.html", vm, status_code=200)
+
+
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")

@@ -3,6 +3,8 @@
 {% block title %}{{ t.error_server }}{% endblock %}
 
 {% block content %}
-  <h1>{{ t.error_server }}</h1>
-  <p><a href="/?lang={{ lang }}">{{ t.back_home }}</a></p>
+  <p class="form-error" role="alert">{{ t.error_server }}</p>
+  <p class="actions">
+    <a class="btn btn--secondary" href="/?lang={{ lang }}">{{ t.back_home }}</a>
+  </p>
 {% endblock %}
