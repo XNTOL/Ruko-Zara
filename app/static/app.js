@@ -1,31 +1,30 @@
-/* Listen, form loading, in-place result language switch. Keep under 8 KB. */
+/* Listen, lang switch, copy. Progressive. Keep under 8 KB. */
 (function () {
   "use strict";
-
   function $(id) {
     return document.getElementById(id);
   }
+  function setText(el, v) {
+    if (el && v != null) el.textContent = v;
+  }
 
-  /* Form: show loading on submit (UIUX waiting state). */
   var form = document.querySelector('form[action="/check"]');
   if (form) {
     form.addEventListener("submit", function () {
-      var submitBtn = form.querySelector('button[type="submit"]');
-      if (!submitBtn || submitBtn.disabled) return;
-      submitBtn.disabled = true;
-      var loading = submitBtn.getAttribute("data-loading");
-      if (loading) submitBtn.textContent = loading;
+      var b = form.querySelector('button[type="submit"]');
+      if (!b || b.disabled) return;
+      b.disabled = true;
+      var loading = b.getAttribute("data-loading");
+      if (loading) b.textContent = loading;
     });
   }
 
-  var i18nNode = $("result-i18n");
   var i18n = null;
+  var i18nNode = $("result-i18n");
   if (i18nNode) {
     try {
       i18n = JSON.parse(i18nNode.textContent || "{}");
-    } catch (e) {
-      i18n = null;
-    }
+    } catch (e) {}
   }
 
   var btn = $("btn-listen");
@@ -45,35 +44,27 @@
     btn.hidden = true;
     if (none) none.hidden = false;
   }
-
   function showListen() {
     if (!btn) return;
     btn.hidden = false;
     if (none) none.hidden = true;
   }
-
-  function hasSpeechApi() {
+  function hasSpeech() {
     return !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
   }
-
   function matchingVoices() {
     return speechSynthesis.getVoices().filter(function (v) {
       return (v.lang || "").toLowerCase().indexOf(prefix) === 0;
     });
   }
-
   function evaluateVoices() {
     if (!btn) return;
-    if (!hasSpeechApi()) {
-      showFallback();
-      return;
-    }
+    if (!hasSpeech()) return showFallback();
     var voices = speechSynthesis.getVoices();
     if (!voices.length) return;
-    if (!matchingVoices().length) showFallback();
-    else showListen();
+    if (matchingVoices().length) showListen();
+    else showFallback();
   }
-
   function stop() {
     speaking = false;
     if (window.speechSynthesis) speechSynthesis.cancel();
@@ -82,28 +73,21 @@
       btn.setAttribute("aria-pressed", "false");
     }
   }
-
   function start() {
     if (!btn) return;
-    if (!hasSpeechApi() || !text) {
-      showFallback();
-      return;
-    }
+    if (!hasSpeech() || !text) return showFallback();
     stop();
-    var utter = new SpeechSynthesisUtterance(text);
-    utter.lang = locale;
-    var match = matchingVoices();
-    if (match.length) utter.voice = match[0];
-    else if (speechSynthesis.getVoices().length) {
-      showFallback();
-      return;
-    }
-    utter.onend = stop;
-    utter.onerror = stop;
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = locale;
+    var m = matchingVoices();
+    if (m.length) u.voice = m[0];
+    else if (speechSynthesis.getVoices().length) return showFallback();
+    u.onend = stop;
+    u.onerror = stop;
     speaking = true;
     btn.textContent = labelStop;
     btn.setAttribute("aria-pressed", "true");
-    speechSynthesis.speak(utter);
+    speechSynthesis.speak(u);
   }
 
   if (btn) {
@@ -111,18 +95,12 @@
       if (speaking) stop();
       else start();
     });
-    if (!hasSpeechApi()) showFallback();
+    if (!hasSpeech()) showFallback();
     else {
       evaluateVoices();
-      if (typeof speechSynthesis.onvoiceschanged !== "undefined") {
-        speechSynthesis.onvoiceschanged = evaluateVoices;
-      }
+      speechSynthesis.onvoiceschanged = evaluateVoices;
       setTimeout(evaluateVoices, 400);
     }
-  }
-
-  function setText(el, value) {
-    if (el && value != null) el.textContent = value;
   }
 
   function applyResultLang(lang) {
@@ -134,7 +112,6 @@
     prefix = locale.slice(0, 2);
     document.documentElement.lang = lang;
     document.title = pack.level_title || document.title;
-
     setText(document.querySelector("[data-i18n-brand]"), t.app_title);
     setText(document.querySelector("[data-i18n-footer]"), t.footer);
     var about = document.querySelector("[data-i18n-about-link]");
@@ -143,79 +120,65 @@
       about.setAttribute("href", "/about?lang=" + lang);
     }
     setText(document.querySelector('[data-i18n="level_title"]'), pack.level_title);
-    setText(
-      document.querySelector('[data-i18n="section_reasons"]'),
-      t.section_reasons
-    );
+    setText(document.querySelector('[data-i18n="section_reasons"]'), t.section_reasons);
     setText(document.querySelector('[data-i18n="section_none"]'), pack.section_none);
     setText(document.querySelector('[data-i18n="matched"]'), t.matched);
     setText(document.querySelector('[data-i18n="caveat"]'), pack.caveat);
     setText(document.querySelector('[data-i18n="ai_label"]'), t.ai_label);
-    var aiBlock = document.querySelector('[data-ai="1"]');
-    if (aiBlock) {
+    var ai = document.querySelector('[data-ai="1"]');
+    if (ai) {
       if (pack.summary) {
-        aiBlock.hidden = false;
+        ai.hidden = false;
         setText(document.querySelector("[data-i18n-summary]"), pack.summary);
-      } else {
-        aiBlock.hidden = true;
-      }
+      } else ai.hidden = true;
     }
-
-    var reasons = pack.reasons || [];
-    for (var i = 0; i < reasons.length; i++) {
-      var article = document.querySelector(
-        '.reason[data-rule="' + reasons[i].rule + '"]'
-      );
-      if (!article) continue;
-      setText(article.querySelector("[data-i18n-reason-title]"), reasons[i].title);
-      setText(article.querySelector("[data-i18n-reason-why]"), reasons[i].why);
-    }
-
+    (pack.reasons || []).forEach(function (r) {
+      var a = document.querySelector('.reason[data-rule="' + r.rule + '"]');
+      if (!a) return;
+      setText(a.querySelector("[data-i18n-reason-title]"), r.title);
+      setText(a.querySelector("[data-i18n-reason-why]"), r.why);
+    });
     var pause = pack.pause || {};
     setText(document.querySelector("[data-i18n-pause-title]"), pause.title);
-    var steps = pause.steps || [];
-    for (var s = 0; s < steps.length; s++) {
-      setText(
-        document.querySelector('[data-i18n-pause-step="' + s + '"]'),
-        steps[s]
-      );
-    }
+    (pause.steps || []).forEach(function (step, s) {
+      setText(document.querySelector('[data-i18n-pause-step="' + s + '"]'), step);
+    });
     setText(document.querySelector("[data-i18n-report-title]"), pause.report_title);
-    var reports = pause.report || [];
-    for (var r = 0; r < reports.length; r++) {
-      var li = document.querySelector(
-        '[data-report-key="' + reports[r].key + '"]'
-      );
-      if (!li) continue;
-      setText(li.querySelector("[data-i18n-report-text]"), reports[r].text);
-    }
-
+    (pause.report || []).forEach(function (item) {
+      var li = document.querySelector('[data-report-key="' + item.key + '"]');
+      if (li) setText(li.querySelector("[data-i18n-report-text]"), item.text);
+    });
     var sebi = pack.sebi || {};
-    var sebiNums = sebi.numbers || [];
-    for (var n = 0; n < sebiNums.length; n++) {
-      var p = document.querySelector(
-        '[data-i18n-sebi-text][data-sebi-number="' + sebiNums[n].number + '"]'
+    (sebi.numbers || []).forEach(function (n) {
+      setText(
+        document.querySelector(
+          '[data-i18n-sebi-text][data-sebi-number="' + n.number + '"]'
+        ),
+        n.text
       );
-      setText(p, sebiNums[n].text);
-      setText(document.querySelector("[data-i18n-sebi-btn]"), sebiNums[n].btn);
-    }
+      setText(document.querySelector("[data-i18n-sebi-btn]"), n.btn);
+    });
     setText(document.querySelector("[data-i18n-sebi-claim]"), sebi.claim_text);
-
+    setText(document.querySelector("[data-i18n-card-title]"), t.card_title);
+    setText($("card-text"), pack.card_text);
+    var cBtn = $("btn-copy");
+    if (cBtn) {
+      cBtn.setAttribute("data-label-copy", t.btn_copy || "");
+      cBtn.setAttribute("data-label-copied", t.copied || "");
+      cBtn.textContent = t.btn_copy || cBtn.textContent;
+    }
     var again = document.querySelector("[data-i18n-again]");
     if (again) {
       again.textContent = t.btn_again;
       again.setAttribute("href", "/?lang=" + lang);
     }
-
     var brand = document.querySelector("[data-i18n-brand]");
     if (brand) brand.setAttribute("href", "/?lang=" + lang);
-
     document.querySelectorAll(".lang-opt").forEach(function (el) {
-      var on = el.getAttribute("data-set-lang") === lang;
-      if (on) el.setAttribute("aria-current", "true");
+      if (el.getAttribute("data-set-lang") === lang)
+        el.setAttribute("aria-current", "true");
       else el.removeAttribute("aria-current");
     });
-
     if (btn) {
       stop();
       text = pack.speak_text || "";
@@ -233,8 +196,38 @@
   document.querySelectorAll(".lang-opt[data-set-lang]").forEach(function (el) {
     el.addEventListener("click", function (ev) {
       ev.preventDefault();
-      var lang = el.getAttribute("data-set-lang");
-      if (lang) applyResultLang(lang);
+      applyResultLang(el.getAttribute("data-set-lang"));
     });
   });
+
+  var copyBtn = $("btn-copy");
+  var cardEl = $("card-text");
+  if (copyBtn && cardEl) {
+    copyBtn.addEventListener("click", function () {
+      var val = cardEl.textContent || "";
+      var a = copyBtn.getAttribute("data-label-copy") || copyBtn.textContent;
+      var b = copyBtn.getAttribute("data-label-copied") || "Copied";
+      function done() {
+        copyBtn.textContent = b;
+        setTimeout(function () {
+          copyBtn.textContent = a;
+        }, 2000);
+      }
+      function fallback() {
+        var range = document.createRange();
+        range.selectNodeContents(cardEl);
+        var sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        try {
+          if (document.execCommand("copy")) done();
+        } catch (err) {}
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(val).then(done).catch(fallback);
+      else fallback();
+    });
+  }
 })();

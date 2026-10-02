@@ -120,6 +120,9 @@ def _locale_pack(result: Result, summary: str | None, lang: str) -> dict[str, ob
             "lang_hi": strings["lang_hi"],
             "lang_en": strings["lang_en"],
             "btn_sebi": strings["btn_sebi"],
+            "card_title": strings["card_title"],
+            "btn_copy": strings["btn_copy"],
+            "copied": strings["copied"],
         },
     }
 

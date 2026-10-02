@@ -339,6 +339,16 @@ mark {
   font-size: 18px;
 }
 
+.card-text {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--few-bg);
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .site-footer {
   margin-top: 2rem;
   padding-top: 1rem;

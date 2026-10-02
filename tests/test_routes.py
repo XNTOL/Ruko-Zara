@@ -210,3 +210,25 @@ def test_pause_and_report_on_all_levels():
         assert "cybercrime.gov.in" in html or LINKS["cybercrime"] in html
         assert "scores.sebi.gov.in" in html or LINKS["scores"] in html
         assert "bank or UPI" in html
+
+
+def test_warning_card_has_rule_titles_only():
+    """T8: card holds rule titles, never the original message."""
+    marker = "SECRET_ORIGINAL_MESSAGE_XYZ"
+    message = f"100% sure profit. Join VIP Telegram. {marker}"
+    response = client.post("/check", data={"message": message, "lang": "en"})
+    assert response.status_code == 200
+    html = response.text
+    assert 'data-card="1"' in html
+    assert 'id="card-text"' in html
+    assert 'id="btn-copy"' in html
+    assert "Copy warning" in html
+    assert "Warning for your family group" in html
+    assert TEXT["guaranteed_returns"]["title"]["en"] in html
+    assert TEXT["private_channel"]["title"]["en"] in html
+    assert marker not in html
+    assert "Ruko Zara!" in html
+    # Copy helper present in JS
+    js = client.get("/static/app.js").text
+    assert "btn-copy" in js
+    assert "clipboard" in js
