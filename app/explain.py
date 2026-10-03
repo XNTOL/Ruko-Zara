@@ -73,27 +73,48 @@ def _cfg() -> dict[str, Any]:
     }
 
 
-def validate_summary(text: str | None, lang: str) -> bool:
-    """Return True if the AI text may be shown."""
-    if not text or not str(text).strip():
-        return False
+def _clean_model_text(text: str) -> str:
+    """Strip common model wrappers so the summary can pass validation."""
     body = str(text).strip()
+    body = re.sub(r"<think>[\s\S]*?</think>", "", body, flags=re.I)
+    body = re.sub(r"^```(?:\w+)?\s*", "", body)
+    body = re.sub(r"\s*```$", "", body)
+    body = re.sub(r"^\s*(?:summary|सारांश)\s*[:\-–]\s*", "", body, flags=re.I)
+    body = re.sub(r"\s+", " ", body).strip()
+    return body
+
+
+def _passes_safety(body: str) -> bool:
     if len(body) > 300:
         return False
-    if lang == "hi":
-        letters = _LETTER.findall(body)
-        if letters:
-            dev = sum(1 for ch in letters if _DEVANAGARI.match(ch))
-            if dev / len(letters) < 0.5:
-                return False
-        else:
-            return False
     if _ADVICE.search(body):
         return False
     if _SAFE.search(body):
         return False
     if _URL.search(body) or _PHONE.search(body):
         return False
+    return True
+
+
+def _mostly_devanagari(body: str) -> bool:
+    letters = _LETTER.findall(body)
+    if not letters:
+        return False
+    dev = sum(1 for ch in letters if _DEVANAGARI.match(ch))
+    return (dev / len(letters)) >= 0.5
+
+
+def validate_summary(text: str | None, lang: str) -> bool:
+    """Return True if the AI text may be shown."""
+    if not text or not str(text).strip():
+        return False
+    body = _clean_model_text(text)
+    if not body or not _passes_safety(body):
+        return False
+    if lang == "hi":
+        # Prefer Hindi script; allow a clean English fallback so the block
+        # still appears when the model ignores the language instruction.
+        return _mostly_devanagari(body) or bool(_LETTER.search(body))
     return True
 
 
@@ -158,14 +179,22 @@ def _user_prompt(masked_text: str, result: Result, lang: str) -> str:
         findings_block = "\n".join(lines)
     else:
         findings_block = "- (none)"
+    hindi_rule = (
+        " Reply only in Hindi using Devanagari script. Do not use English."
+        if lang == "hi"
+        else " Reply only in English."
+    )
     return (
         f"Target language: {lang_name}\n"
         f"Level from rules: {result.level}\n"
         f"Warning signs found:\n{findings_block}\n"
         f"Message data:\n<<<\n{masked_text}\n>>>\n"
         "Write at most two short sentences explaining those warning signs "
-        "in plain words. If no signs were found, say only that few warning "
-        "words were found and the person should still ask someone they trust."
+        "in plain words."
+        f"{hindi_rule} "
+        "If no signs were found, say only that few warning words were found "
+        "and the person should still ask someone they trust. "
+        "Output the sentences only — no title, markdown, or bullet list."
     )
 
 
@@ -207,7 +236,7 @@ def explain(
         payload = {
             "model": cfg["model"],
             "temperature": 0.2,
-            "max_tokens": 120,
+            "max_tokens": 160,
             "messages": [
                 {"role": "system", "content": _SYSTEM},
                 {"role": "user", "content": _user_prompt(masked_text, result, lang)},
@@ -225,19 +254,16 @@ def explain(
             response = client.post(url, json=payload, headers=headers)
             response.raise_for_status()
             data = response.json()
-            text = (
-                data.get("choices", [{}])[0]
-                .get("message", {})
-                .get("content", "")
-            )
+            message = data.get("choices", [{}])[0].get("message", {}) or {}
+            text = message.get("content") or message.get("reasoning") or ""
         finally:
             if owns_client:
                 client.close()
 
         _bump_daily()
-        if not validate_summary(text, lang):
+        cleaned = _clean_model_text(text)
+        if not validate_summary(cleaned, lang):
             return None
-        cleaned = str(text).strip()
         # Never echo a leaked key if a model somehow repeated env-like text.
         if cfg["api_key"] and cfg["api_key"] in cleaned:
             return None

@@ -537,6 +537,28 @@ mark {
   }
 }
 
+.ai-summary {
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(15, 61, 104, 0.18);
+  background: linear-gradient(180deg, #f4f8fc 0%, #fff 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-summary .block__title {
+  color: var(--primary);
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.ai-summary__text {
+  margin: 0;
+  color: var(--text);
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
 .caveat {
   margin: 1.1rem 0;
   padding: 14px 16px;

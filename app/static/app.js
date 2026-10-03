@@ -132,7 +132,7 @@
     if (ai) {
       if (pack.summary) {
         ai.hidden = false;
-        setText(q("[data-i18n-summary]"), pack.summary);
+        setText(ai.querySelector("[data-i18n-summary]"), pack.summary);
       } else ai.hidden = true;
     }
     (pack.reasons || []).forEach(function (r) {

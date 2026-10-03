@@ -79,10 +79,18 @@ def test_validate_rejects_url_and_phone():
     assert validate_summary("Call 9876543210 for help.", "en") is False
 
 
-def test_validate_hindi_needs_devanagari():
-    assert validate_summary("This is mostly English words here.", "hi") is False
+def test_validate_hindi_prefers_devanagari_but_allows_english_fallback():
+    # Hindi script still accepted.
     assert (
         validate_summary("संदेश में पक्के मुनाफ़े जैसे संकेत दिखे। सावधान रहें।", "hi")
+        is True
+    )
+    # English fallback: model often ignores Hindi instruction; still show it.
+    assert (
+        validate_summary(
+            "The message promises sure profit and asks you to join a private group.",
+            "hi",
+        )
         is True
     )
 
