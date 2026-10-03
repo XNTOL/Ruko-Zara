@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 
 from app.content import LINKS
@@ -56,14 +57,23 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"risk[\s-]*free\s+(profit|return|munafa)", re.I),
             re.compile(r"(?:zero|no)\s*risk\s+(?:profit|return|munafa)", re.I),
             re.compile(r"\bno\s*loss\b", re.I),
-            re.compile(r"double\s+(?:your\s+)?(?:money|paisa|profit)", re.I),
+            re.compile(r"double\s+(?:your\s+)?(?:money|paisa|profit|returns?)", re.I),
+            re.compile(r"get\s+double\s+(?:return|returns?|money|profit|paisa)", re.I),
             re.compile(r"\b2x\s*(?:profit|returns?|money|paisa)\b", re.I),
             re.compile(r"\beasy\s+money\b", re.I),
             re.compile(r"\bfixed\s+profit\b", re.I),
             re.compile(r"\bassured\s+(?:profit|returns?|munafa)\b", re.I),
+            re.compile(r"\b(?:huge|big|high|massive)\s+returns?\b", re.I),
+            re.compile(r"\bmultibagger\b", re.I),
+            re.compile(r"\d+\s*%\s*returns?\b", re.I),
+            re.compile(r"returns?\s+in\s+(?:one|1|a|two|2)\s+month", re.I),
             re.compile(r"\bsecret\s+tip\b", re.I),
+            re.compile(r"\bstock\s+tip\b", re.I),
             re.compile(r"\bipo\s+(?:allotment\s+)?guaranteed\b", re.I),
             re.compile(r"\bminimum\s+(?:investment|deposit)\b", re.I),
+            re.compile(r"\bguaranteed\b", re.I),
+            re.compile(r"\bmilne\s+wala\b", re.I),
+            re.compile(r"\b(?:profit|returns?|munafa)\s+mil(?:e(?:ga|gi)?|enge)\b", re.I),
             re.compile(r"\bpakka\s*(?:munafa|profit|return|returns?)\b", re.I),
             re.compile(r"\b(?:munafa|profit)\s*pakka\b", re.I),
             re.compile(r"\bpakke?\s*returns?\b", re.I),
@@ -95,6 +105,13 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"(?:activation|joining|security|token|kyc|booking)\s+(?:fees?|charges?|amount|deposit)", re.I),
             re.compile(r"\bbooking\s+amount\b", re.I),
             re.compile(r"\bpay\s+(?:to\s+)?(?:join|unlock|activate)\b", re.I),
+            re.compile(r"\bsend\s+money\b", re.I),
+            re.compile(r"\bsend\s+(?:paisa|rs\.?|rupees?)\b", re.I),
+            re.compile(r"\btransfer\s+(?:money|paisa|amount|funds?)\b", re.I),
+            re.compile(r"\bpay\s+(?:to\s+)?(?:this\s+)?upi\b", re.I),
+            re.compile(r"\b(?:on|via|through)\s+upi\b", re.I),
+            re.compile(r"\bupi\s+(?:id|number|par|pe|send)\b", re.I),
+            re.compile(r"\bdeposit\s+(?:first|now|today|amount)\b", re.I),
             re.compile(
                 r"share\s+(?:your\s+)?(?:upi\s*)?(?:otp|pin|password|passcode)",
                 re.I,
@@ -185,11 +202,14 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"\bas\s+per\s+sebi\b", re.I),
             re.compile(r"\binsider\b", re.I),
             re.compile(r"\boperator\b", re.I),
+            re.compile(r"sebi\s+officer", re.I),
+            re.compile(r"from\s+sebi\b", re.I),
             re.compile(r"rbi\s+approved", re.I),
             re.compile(r"government\s+approved", re.I),
             re.compile(r"\bgovt\.?\s*approved\b", re.I),
             re.compile(r"\bsarkari\s*(?:approved|scheme|yojana)\b", re.I),
             re.compile(r"\binsider\s*(?:tip|info|news)\b", re.I),
+            re.compile(r"\bofficial\s+(?:tip|channel|group)\b", re.I),
             re.compile(r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड|प्रमाणित)", re.I),
             re.compile(r"सेबी\s*से\s*(?:मंज़?ूरी|अप्रूवल|रजिस्टर्ड)", re.I),
             re.compile(r"सेबी\s*(?:मंज़?ूर|अनुमोदित)", re.I),
@@ -221,6 +241,12 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"\bgrp\s*join\b", re.I),
             re.compile(r"\bprofit\s+sharing\s+group\b", re.I),
             re.compile(r"\btip\s+(?:group|channel|grp)\b", re.I),
+            re.compile(r"\btrading\s+group\b", re.I),
+            re.compile(r"join\s+(?:our\s+|the\s+|my\s+)?trading\s+group\b", re.I),
+            re.compile(r"\bon\s+whatsapp\b", re.I),
+            re.compile(r"\bcontact\s+(?:me\s+)?on\s+(?:whatsapp|telegram|wa)\b", re.I),
+            re.compile(r"\bmessage\s+me\s+on\s+(?:whatsapp|telegram|wa)\b", re.I),
+            re.compile(r"\bcall\s+this\s+number\b", re.I),
             re.compile(r"download\s+(?:our\s+)?app", re.I),
             re.compile(r"\bapp\s*download(?:\s*karo)?\b", re.I),
             re.compile(r"\bdownload\s*karo\b", re.I),
@@ -244,6 +270,7 @@ _NEGATION = re.compile(
     r"(?:"
     r"\bnever\b|\bdon'?t\b|\bdo\s+not\b|\bavoid\b|\bwarn(?:s|ing)?\b|"
     r"\bscam\b|\bfraud\b|\bignore\b|\bnot\s+share\b|"
+    r"\bnot\s+guaranteed\b|\bno\s+guarantee\b|"
     r"\bmat\s+(?:share|bhejo|batao|bataao|do|dena|join|kholo|dena)\b|"
     r"\bkabhi\s*(?:bhi\s*)?mat\b|"
     r"\bnahi\s*(?:dena|bhejna|batana|batana)\b|"
@@ -302,12 +329,20 @@ def _level_for(findings: list[Finding]) -> Level:
     return "few"
 
 
+def _normalize(text: str) -> str:
+    """Normalize Unicode and spaces so tip forwards match more reliably."""
+    body = unicodedata.normalize("NFKC", text)
+    body = body.replace("\u200c", "").replace("\u200d", "")
+    body = re.sub(r"\s+", " ", body).strip()
+    return body
+
+
 def assess(text: str) -> Result:
     """Score a pasted message. Runs on the original text (not masked)."""
     if text is None or not str(text).strip():
         return Result(level="no_text")
 
-    body = str(text)
+    body = _normalize(str(text))
     findings: list[Finding] = []
 
     for rule_id, strength, patterns in _RULE_SPECS:

@@ -110,6 +110,7 @@ def _client_ip(request: Request) -> str:
 
 @app.get("/healthz")
 def healthz() -> dict[str, bool]:
+    # Intentionally tiny: never expose env, keys, models, or version details.
     return {"ok": True}
 
 

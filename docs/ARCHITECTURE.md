@@ -134,14 +134,14 @@ The validator is the second line of defence against prompt injection. Rules and 
 AI_ENABLED=false
 AI_API_KEY=
 AI_BASE_URL=https://api.groq.com/openai/v1
-AI_MODEL=
+AI_MODEL=openai/gpt-oss-20b
 AI_TIMEOUT_S=4
 MAX_CHARS=2000
 RATE_LIMIT_PER_MIN=12
 DAILY_AI_CAP=500
 ```
 
-`AI_MODEL` stays empty in the repo. XN picks a current free model on Day 3. Free-tier limits change; check them on the day.
+Keep `AI_API_KEY` empty in git. Set the live key only in the host secret store or a local `.env` (gitignored). Prefer current free-tier chat models such as `openai/gpt-oss-20b`; free-tier ids change — check Groq on the day.
 
 ## 10. Tests
 

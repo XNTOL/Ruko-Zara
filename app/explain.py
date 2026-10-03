@@ -53,9 +53,16 @@ def _env_bool(name: str, default: bool = False) -> bool:
 
 
 def _cfg() -> dict[str, Any]:
+    api_key = os.getenv("AI_API_KEY", "").strip()
+    # Explicit AI_ENABLED wins; if unset, key presence turns AI on.
+    raw_enabled = os.getenv("AI_ENABLED")
+    if raw_enabled is None:
+        enabled = bool(api_key)
+    else:
+        enabled = _env_bool("AI_ENABLED", False)
     return {
-        "enabled": _env_bool("AI_ENABLED", False),
-        "api_key": os.getenv("AI_API_KEY", "").strip(),
+        "enabled": enabled,
+        "api_key": api_key,
         "base_url": os.getenv("AI_BASE_URL", "https://api.groq.com/openai/v1").rstrip(
             "/"
         ),
@@ -231,7 +238,11 @@ def explain(
         if not validate_summary(text, lang):
             return None
         cleaned = str(text).strip()
+        # Never echo a leaked key if a model somehow repeated env-like text.
+        if cfg["api_key"] and cfg["api_key"] in cleaned:
+            return None
         _cache_put(key, cleaned)
         return cleaned
     except Exception:
+        # Swallow errors; never surface provider payloads or auth headers.
         return None

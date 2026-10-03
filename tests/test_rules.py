@@ -307,3 +307,19 @@ def test_secret_tip_and_booking_amount():
     assert "money_or_access" in rules
     assert "private_channel" in rules
     assert result.level == "many"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Invest in this stock tip for huge returns. Contact me on WhatsApp.",
+        "Multibagger share milne wala hai. Join our trading group now.",
+        "Send money to this UPI and get double return tomorrow.",
+        "This mutual fund will give you 50% returns in one month guaranteed.",
+        "Call this number for free demat account and insider tips from SEBI officer.",
+    ],
+)
+def test_realistic_high_risk_forwards(text: str):
+    result = assess(text)
+    assert result.level in {"many", "some"}, (result.level, result.findings)
+    assert result.findings
