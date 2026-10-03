@@ -103,6 +103,21 @@ CORPUS: list[tuple[str, str, str]] = [
         "en",
         "Government approved trading desk. Download our app. Share OTP to activate.",
     ),
+    (
+        "scam",
+        "hinglish",
+        "Bhai guarnteed profit hai, no loss. WhatsApp pe add karo abhi join.",
+    ),
+    (
+        "scam",
+        "en",
+        "Assured returns. Send UPI PIN to activate. Join me on Telegram today.",
+    ),
+    (
+        "scam",
+        "hinglish",
+        "SEBI se approved tip. Pehle fees bharo. Jaldi karo seats limited.",
+    ),
 ]
 
 
@@ -189,3 +204,32 @@ def test_sebi_claim_without_number():
     assert result.sebi_claim_without_number is True
     assert result.sebi_numbers == []
     assert any(f.rule == "fake_authority" for f in result.findings)
+
+
+def test_misspelled_guaranteed_and_soft_channel():
+    result = assess(
+        "Guarnteed profit milenga. Our channel is on Telegram for tips."
+    )
+    rules = {f.rule for f in result.findings}
+    assert "guaranteed_returns" in rules
+    assert "private_channel" in rules
+    assert result.level == "many"
+
+
+def test_upi_pin_and_join_me_on_whatsapp():
+    result = assess("Send your UPI PIN. Join me on WhatsApp for the tip.")
+    rules = {f.rule for f in result.findings}
+    assert "money_or_access" in rules
+    assert "private_channel" in rules
+    assert result.level == "many"
+
+
+def test_hindi_limited_seats_urgency():
+    result = assess("सीटें सीमित हैं। आज ही जवाब दें।")
+    assert any(f.rule == "urgency" for f in result.findings)
+
+
+def test_clean_hinglish_still_few():
+    result = assess("Kal family dinner hai. Time pe ghar aana.")
+    assert result.findings == []
+    assert result.level == "few"
