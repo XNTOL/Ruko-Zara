@@ -9,11 +9,11 @@
   <section class="level level--{{ level }}" data-level="{{ level }}">
     <span class="level__icon" aria-hidden="true">
       {% if level == "many" %}
-      <svg viewBox="0 0 32 32" role="img"><path fill="currentColor" d="M16 3 30 28H2L16 3z"/><text x="16" y="24" text-anchor="middle" fill="#FAF7F2" font-size="14" font-weight="700" font-family="system-ui,sans-serif">!</text></svg>
+      <svg viewBox="0 0 32 32" role="img"><path fill="currentColor" d="M16 3 30 28H2L16 3z"/><text x="16" y="24" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="system-ui,sans-serif">!</text></svg>
       {% elif level == "some" %}
-      <svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="16" r="14" fill="currentColor"/><text x="16" y="22" text-anchor="middle" fill="#FAF7F2" font-size="16" font-weight="700" font-family="system-ui,sans-serif">!</text></svg>
+      <svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="16" r="14" fill="currentColor"/><text x="16" y="22" text-anchor="middle" fill="#fff" font-size="16" font-weight="700" font-family="system-ui,sans-serif">!</text></svg>
       {% else %}
-      <svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="16" r="14" fill="currentColor"/><text x="16" y="22" text-anchor="middle" fill="#FAF7F2" font-size="16" font-weight="700" font-family="system-ui,sans-serif">i</text></svg>
+      <svg viewBox="0 0 32 32" role="img"><circle cx="16" cy="16" r="14" fill="currentColor"/><text x="16" y="22" text-anchor="middle" fill="#fff" font-size="16" font-weight="700" font-family="system-ui,sans-serif">i</text></svg>
       {% endif %}
     </span>
     <h1 class="level__title" data-i18n="level_title">{{ level_title }}</h1>
