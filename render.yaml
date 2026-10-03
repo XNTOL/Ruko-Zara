@@ -8,7 +8,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
-      # Off until AI_API_KEY + AI_MODEL are set in the Dashboard.
+      # Flip AI_ENABLED to true in the Dashboard after setting AI_API_KEY.
       - key: AI_ENABLED
         value: "false"
       - key: AI_API_KEY
@@ -16,7 +16,7 @@ services:
       - key: AI_BASE_URL
         value: https://api.groq.com/openai/v1
       - key: AI_MODEL
-        sync: false
+        value: openai/gpt-oss-20b
       - key: AI_TIMEOUT_S
         value: "4"
       - key: MAX_CHARS

@@ -296,3 +296,14 @@ def test_sebi_claim_hindi_without_number():
     result = assess("हम सेबी से मंजूरी प्राप्त हैं। टिप के लिए संदेश भेजें।")
     assert result.sebi_claim_without_number is True
     assert any(f.rule == "fake_authority" for f in result.findings)
+
+
+def test_secret_tip_and_booking_amount():
+    result = assess(
+        "Secret tip for IPO allotment guaranteed. Pay booking amount to join tip group."
+    )
+    rules = {f.rule for f in result.findings}
+    assert "guaranteed_returns" in rules
+    assert "money_or_access" in rules
+    assert "private_channel" in rules
+    assert result.level == "many"

@@ -35,7 +35,7 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 Tests: `python -m pytest`  
 Health: `GET /healthz` → `{"ok": true}`
 
-AI summary is off by default. To enable locally or on Render, set `AI_API_KEY`, `AI_MODEL`, then `AI_ENABLED=true` (see `.env.example`).
+AI summary (Groq) is off by default. Get a key at [console.groq.com](https://console.groq.com), set `AI_API_KEY`, leave `AI_MODEL=openai/gpt-oss-20b`, then `AI_ENABLED=true` (see `.env.example`).
 
 ## Specs
 
