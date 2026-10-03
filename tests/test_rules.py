@@ -118,6 +118,21 @@ CORPUS: list[tuple[str, str, str]] = [
         "hinglish",
         "SEBI se approved tip. Pehle fees bharo. Jaldi karo seats limited.",
     ),
+    (
+        "scam",
+        "hi",
+        "पक्का मुनाफा मिलेगा। निजी टेलीग्राम ग्रुप जॉइन करो। आज ही ओटीपी भेजो।",
+    ),
+    (
+        "scam",
+        "hi",
+        "सेबी से मंजूरी मिली है। पहले शुल्क भरो और स्क्रीन शेयर करो।",
+    ),
+    (
+        "edu",
+        "hi",
+        "ओटीपी कभी न बताएं। टेलीग्राम टिप ग्रुप न जॉइन करें। पक्का मुनाफा ठगी है।",
+    ),
 ]
 
 
@@ -233,3 +248,51 @@ def test_clean_hinglish_still_few():
     result = assess("Kal family dinner hai. Time pe ghar aana.")
     assert result.findings == []
     assert result.level == "few"
+
+
+# Pure Hindi (Devanagari-heavy) tip forwards — synthetic only.
+HINDI_SCAMS: list[str] = [
+    "पक्का मुनाफा मिलेगा। निजी टेलीग्राम ग्रुप जॉइन करो। आज ही ओटीपी भेजो।",
+    "सेबी से मंजूरी मिली है। पहले शुल्क भरो और स्क्रीन शेयर करो।",
+    "दो गुना पैसा बिना नुकसान। व्हाट्सऐप ग्रुप में जुड़ें। अंतिम अवसर।",
+    "अंदरूनी टिप। यूपीआई पिन बताओ। ऐप डाउनलोड करो।",
+    "आरबीआई मंजूर स्कीम। जल्दी जुड़ें। सीटें सीमित हैं।",
+]
+
+
+@pytest.mark.parametrize("text", HINDI_SCAMS)
+def test_pure_hindi_scams_flagged(text: str):
+    result = assess(text)
+    assert result.level in {"many", "some"}
+    assert result.findings
+
+
+def test_pure_hindi_many_with_strong_signs():
+    result = assess(
+        "गारंटीड मुनाफा! वीआईपी ग्रुप जॉइन करो। शुल्क भरो और ओटीपी दो।"
+    )
+    rules = {f.rule for f in result.findings}
+    assert "guaranteed_returns" in rules
+    assert "money_or_access" in rules
+    assert result.level == "many"
+
+
+def test_pure_hindi_edu_still_few():
+    result = assess(
+        "ओटीपी कभी न बताएं। टेलीग्राम टिप ग्रुप न जॉइन करें। "
+        "पक्का मुनाफा वाले संदेश ठगी हैं। सावधान रहें।"
+    )
+    assert result.findings == []
+    assert result.level == "few"
+
+
+def test_pure_hindi_clean_still_few():
+    result = assess("आज मौसम अच्छा है। शाम को चाय पीना। परिवार से मिलना।")
+    assert result.findings == []
+    assert result.level == "few"
+
+
+def test_sebi_claim_hindi_without_number():
+    result = assess("हम सेबी से मंजूरी प्राप्त हैं। टिप के लिए संदेश भेजें।")
+    assert result.sebi_claim_without_number is True
+    assert any(f.rule == "fake_authority" for f in result.findings)

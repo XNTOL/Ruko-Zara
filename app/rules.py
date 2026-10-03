@@ -72,6 +72,14 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"गारंटी(?:ड)?\s*(?:मुना[फ़फ]ा|रिटर्न)", re.I),
             re.compile(r"बिना\s*जोखिम\s*(?:का\s*)?मुना[फ़फ]ा", re.I),
             re.compile(r"नुकसान\s*नहीं", re.I),
+            re.compile(r"पक्का\s*(?:रिटर्न|लाभ|कमाई)", re.I),
+            re.compile(r"(?:दो\s*गुना|दुगना)\s*(?:पैसा|मुना[फ़फ]ा|लाभ)", re.I),
+            re.compile(r"पैसा\s*दोगुना", re.I),
+            re.compile(r"निश्चित\s*(?:मुना[फ़फ]ा|लाभ|रिटर्न)", re.I),
+            re.compile(r"बिना\s*नुकसान", re.I),
+            re.compile(r"जोखिम\s*रहित\s*(?:मुना[फ़फ]ा|लाभ|रिटर्न)?", re.I),
+            re.compile(r"आसान\s*कमाई", re.I),
+            re.compile(r"फिक्स्ड\s*(?:मुना[फ़फ]ा|रिटर्न|लाभ)", re.I),
         ],
     ),
     (
@@ -103,10 +111,19 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"\bpehle\s*(?:fees?|paisa|payment|advance)\b", re.I),
             re.compile(r"\baccount\s*(?:number|details?)\s*(?:bhejo|do|dena)\b", re.I),
             re.compile(r"\bdemat\s*(?:password|pin|login)\b", re.I),
-            re.compile(r"शुल्क\s*(?:भरो|भेजो|दो)", re.I),
-            re.compile(r"otp\s*(?:बता|भेज|दे)", re.I),
-            re.compile(r"पिन\s*(?:बता|भेज|दे)", re.I),
+            re.compile(r"शुल्क\s*(?:भरो|भेजो|दो|जमा)", re.I),
+            re.compile(r"(?:रजिस्ट्रेशन|एक्टिवेशन|जॉइनिंग|सुरक्षा)\s*शुल्क", re.I),
+            re.compile(r"(?:otp|ओटीपी|ओ\.?\s*टी\.?\s*पी)\s*(?:बता|भेज|दे|दीजिए|दो)", re.I),
+            re.compile(r"(?:बता|भेज|दे|दीजिए|दो)\s*(?:otp|ओटीपी)", re.I),
+            re.compile(r"(?:यूपीआई|upi)\s*पिन\s*(?:बता|भेज|दे|दो)", re.I),
+            re.compile(r"पिन\s*(?:बता|भेज|दे|दो)", re.I),
+            re.compile(r"पासवर्ड\s*(?:बता|भेज|दे|दो|शेयर)", re.I),
             re.compile(r"स्क्रीन\s*शेयर", re.I),
+            re.compile(r"(?:अनीडेस्क|एनीडेस्क|anydesk)", re.I),
+            re.compile(r"टीम\s*व्यूअर", re.I),
+            re.compile(r"पहले\s*(?:शुल्क|पैसे?|भुगतान|एडवांस)", re.I),
+            re.compile(r"(?:खाता|अकाउंट)\s*(?:नंबर|विवरण)\s*(?:भेजो|दो|बताओ)", re.I),
+            re.compile(r"डीमैट\s*(?:पासवर्ड|पिन|लॉगिन)", re.I),
         ],
     ),
     (
@@ -134,9 +151,17 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"\bmat\s*chhodna\b", re.I),
             re.compile(r"आज\s*ही", re.I),
             re.compile(r"सिर्फ\s*आज", re.I),
-            re.compile(r"जल्दी\s*(?:करो|करें|जवाब)", re.I),
+            re.compile(r"केवल\s*आज", re.I),
+            re.compile(r"जल्दी\s*(?:करो|करें|जवाब|जुड़)", re.I),
             re.compile(r"अवसर\s*जा\s*रहा", re.I),
             re.compile(r"सीटें?\s*सीमित", re.I),
+            re.compile(r"अंतिम\s*(?:अवसर|मौका|सीट)", re.I),
+            re.compile(r"अभी\s*(?:जॉइन|जुड़|भेज|करो|करें)", re.I),
+            re.compile(r"अभी\s*के\s*अभी", re.I),
+            re.compile(r"छोड़[ोें]\s*मत", re.I),
+            re.compile(r"मौका\s*हाथ\s*से\s*न\s*जाने\s*दें?", re.I),
+            re.compile(r"समय\s*सीमित", re.I),
+            re.compile(r"ऑफर\s*(?:समाप्त|खत्म|खत्म\s*हो)", re.I),
         ],
     ),
     (
@@ -157,9 +182,14 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"\bgovt\.?\s*approved\b", re.I),
             re.compile(r"\bsarkari\s*(?:approved|scheme|yojana)\b", re.I),
             re.compile(r"\binsider\s*(?:tip|info|news)\b", re.I),
-            re.compile(r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड)", re.I),
-            re.compile(r"सरकारी\s*मंज़?ूरी", re.I),
-            re.compile(r"इन्साइडर", re.I),
+            re.compile(r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड|प्रमाणित)", re.I),
+            re.compile(r"सेबी\s*से\s*(?:मंज़?ूरी|अप्रूवल|रजिस्टर्ड)", re.I),
+            re.compile(r"सेबी\s*(?:मंज़?ूर|अनुमोदित)", re.I),
+            re.compile(r"आरबीआई\s*(?:मंजूर|अप्रूव्ड)", re.I),
+            re.compile(r"सरकारी\s*(?:मंज़?ूरी|योजना|स्कीम)", re.I),
+            re.compile(r"इन्साइडर|इनसाइडर", re.I),
+            re.compile(r"ऑपरेटर\s*(?:टिप|सलाह)?", re.I),
+            re.compile(r"अंदरूनी\s*(?:जानकारी|टिप|सूचना)", re.I),
         ],
     ),
     (
@@ -187,12 +217,19 @@ _RULE_SPECS: list[tuple[str, Strength, list[re.Pattern[str]]]] = [
             re.compile(r"टेलीग्राम", re.I),
             re.compile(r"व्हाट्स(?:अ|ऐ)प\s*(?:ग्रुप|चैनल)", re.I),
             re.compile(r"VIP\s*ग्रुप", re.I),
-            re.compile(r"ऐप\s*डाउनलोड", re.I),
+            re.compile(r"(?:निजी|प्राइवेट|वीआईपी|VIP)\s*(?:ग्रुप|चैनल)", re.I),
+            re.compile(r"(?:ग्रुप|चैनल)\s*(?:जॉइन|जुड़)", re.I),
+            re.compile(r"जॉइन\s*(?:करो|करें|कीजिए)", re.I),
+            re.compile(r"(?:टेलीग्राम|व्हाट्स(?:अ|ऐ)प)\s*(?:पर|में)\s*(?:आओ|जुड़|जॉइन|ऐड)", re.I),
+            re.compile(r"ऐप\s*(?:डाउनलोड|इंस्टॉल)", re.I),
+            re.compile(r"डाउनलोड\s*(?:करो|करें|कीजिए)", re.I),
         ],
     ),
 ]
 
 # Nearby words that mean the message warns against the matched sign.
+# Hindi "न …" must not match the trailing न inside words like पिन.
+_DEV_BOUND = r"(?<![\u0900-\u097F])"
 _NEGATION = re.compile(
     r"(?:"
     r"\bnever\b|\bdon'?t\b|\bdo\s+not\b|\bavoid\b|\bwarn(?:s|ing)?\b|"
@@ -200,8 +237,11 @@ _NEGATION = re.compile(
     r"\bmat\s+(?:share|bhejo|batao|bataao|do|dena|join|kholo|dena)\b|"
     r"\bkabhi\s*(?:bhi\s*)?mat\b|"
     r"\bnahi\s*(?:dena|bhejna|batana|batana)\b|"
-    r"कभी\s*न[ाअ]?|मत\s+|न\s+दें|न\s+बता|नहीं\s+देना|"
-    r"न\s+खोल|ठगी|सावधान|बचना|बचें"
+    r"कभी\s*न[ाअ]?|"
+    rf"{_DEV_BOUND}मत\s+|"
+    rf"{_DEV_BOUND}नहीं\s+देना|"
+    rf"{_DEV_BOUND}न\s+(?:दें|बता|खोल|भेज|जॉइन|जुड़)|"
+    r"ठगी|धोखा|सावधान|बचना|बचें|चेतावनी|झूठा"
     r")",
     re.I,
 )
@@ -210,7 +250,7 @@ _SEBI_NUMBER = re.compile(r"\b(IN[A-Z]{1,2}[0-9]{6,12})\b", re.I)
 _SEBI_CLAIM = re.compile(
     r"(?:"
     r"sebi\s+(?:approved|registered|registration|certified|wala)|"
-    r"सेबी\s*(?:द्वारा\s*)?(?:मंजूर|अप्रूव्ड|रजिस्टर्ड|रजिस्ट्रेशन)"
+    r"सेबी\s*(?:द्वारा\s*|से\s*)?(?:मंज़?ूर|मंज़?ूरी|अप्रूव्ड|अप्रूवल|रजिस्टर्ड|रजिस्ट्रेशन|प्रमाणित|अनुमोदित)"
     r")",
     re.I,
 )
